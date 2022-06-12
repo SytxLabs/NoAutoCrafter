@@ -1,0 +1,13 @@
+name: AutoCrafter
+version: '${project.version}'
+main: de.chaosschwein.autocrafter.main.AutoMain
+api-version: 1.16
+authors: [ ChaosSchwein ]
+description: Minecraft AutoCrafter Plugin
+website: https://sytx.eu
+
+commands:
+  autocrafter:
+    usage: /autocrafter
+    description: AutoCrafter Command
+    aliases: [ ac ]
