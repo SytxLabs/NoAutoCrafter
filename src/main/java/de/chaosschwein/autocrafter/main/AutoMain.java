@@ -5,6 +5,7 @@ import de.chaosschwein.autocrafter.listener.InventoryListener;
 import de.chaosschwein.autocrafter.listener.dis;
 import de.chaosschwein.autocrafter.manager.FileManager;
 import de.chaosschwein.autocrafter.manager.file.CrafingRezeptFile;
+import de.chaosschwein.autocrafter.manager.file.CrafterFile;
 import de.chaosschwein.autocrafter.utils.Message;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -22,14 +23,14 @@ public final class AutoMain extends JavaPlugin {
         config.writeDefault(new HashMap<String,Object>(){{
             put("prefix", "&8[&aAutoCrafter§8] &7");
         }});
-        prefix = config.read("prefix").toString();
+        prefix = config.read("prefix");
 
 
         Bukkit.getPluginManager().registerEvents(new dis(), this);
         Bukkit.getPluginManager().registerEvents(new InventoryListener(),this);
 
         new CrafingRezeptFile().init();
-
+        new CrafterFile().cache();
         getCommand("autocrafter").setExecutor(new AutoCommand());
         if(Bukkit.getPluginManager().isPluginEnabled(instand)) {
             Bukkit.getConsoleSender().sendMessage(prefix+"§a--------------------------");

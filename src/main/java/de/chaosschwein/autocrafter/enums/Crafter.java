@@ -7,6 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.Directional;
 
 public class Crafter {
 
@@ -20,7 +21,7 @@ public class Crafter {
     public long createtAT = 0;
 
     public Crafter(Location dispenser) {
-        if (dispenser.getBlock().getType() != Material.AIR && dispenser.getBlock().getType() != Material.DISPENSER) {
+        if (dispenser.getBlock().getType() != Material.AIR && dispenser.getBlock().getType() == Material.DISPENSER) {
             this.dispenser = dispenser.getBlock();
             this.isCrafter = new CheckBlocks(this.dispenser).isCrafter();
         }
@@ -30,36 +31,35 @@ public class Crafter {
         this.isCrafter = new CheckBlocks(this.dispenser).isCrafter();
         return this.isCrafter;
     }
+
     public Crafter getCrafter() {
         if (this.isCrafter) {
-            BlockFace face = this.dispenser.getFace(this.dispenser);
-            if (face == null) {
-                return this;
-            }
-            switch (face) {
-                case DOWN:
-                    this.craftingTable = this.dispenser.getLocation().add(0, -1, 0).getBlock();
-                    this.hopper = this.dispenser.getLocation().add(0, -2, 0).getBlock();
-                    break;
-                case NORTH:
-                    this.craftingTable = this.dispenser.getLocation().add(0, 0, -1).getBlock();
-                    this.hopper = this.dispenser.getLocation().add(0, -1, -1).getBlock();
-                    break;
-                case SOUTH:
-                    this.craftingTable = this.dispenser.getLocation().add(0, 0, +1).getBlock();
-                    this.hopper = this.dispenser.getLocation().add(0, -1, +1).getBlock();
-                    break;
-                case WEST:
-                    this.craftingTable = this.dispenser.getLocation().add(-1, 0, 0).getBlock();
-                    this.hopper = this.dispenser.getLocation().add(-1, -1, 0).getBlock();
-                    break;
-                case EAST:
-                    this.craftingTable = this.dispenser.getLocation().add(+1, 0, 0).getBlock();
-                    this.hopper = this.dispenser.getLocation().add(+1, -1, 0).getBlock();
-                    break;
+            if (this.dispenser.getBlockData() instanceof Directional) {
+                BlockFace face = ((Directional) this.dispenser.getBlockData()).getFacing();
+                switch (face) {
+                    case DOWN:
+                        this.craftingTable = this.dispenser.getLocation().add(0, -1, 0).getBlock();
+                        this.hopper = this.dispenser.getLocation().add(0, -2, 0).getBlock();
+                        break;
+                    case NORTH:
+                        this.craftingTable = this.dispenser.getLocation().add(0, 0, -1).getBlock();
+                        this.hopper = this.dispenser.getLocation().add(0, -1, -1).getBlock();
+                        break;
+                    case SOUTH:
+                        this.craftingTable = this.dispenser.getLocation().add(0, 0, +1).getBlock();
+                        this.hopper = this.dispenser.getLocation().add(0, -1, +1).getBlock();
+                        break;
+                    case WEST:
+                        this.craftingTable = this.dispenser.getLocation().add(-1, 0, 0).getBlock();
+                        this.hopper = this.dispenser.getLocation().add(-1, -1, 0).getBlock();
+                        break;
+                    case EAST:
+                        this.craftingTable = this.dispenser.getLocation().add(+1, 0, 0).getBlock();
+                        this.hopper = this.dispenser.getLocation().add(+1, -1, 0).getBlock();
+                        break;
+                }
             }
         }
-
         return this;
     }
 
@@ -72,26 +72,32 @@ public class Crafter {
 
     public String getOwnerUUID() {
         if (this.ownerUUID.equals("")) {
-            this.ownerUUID = new CrafterFile().getOwnerUUID(this);
+            if(new CrafterFile().contains(this)) {
+                this.ownerUUID = new CrafterFile().getOwnerUUID(this);
+            }
         }
         return this.ownerUUID;
     }
 
     public String getOwnerName() {
         if (this.ownerName.equals("")) {
-            this.ownerName = new CrafterFile().getOwnerName(this);
+            if(new CrafterFile().contains(this)) {
+                this.ownerName = new CrafterFile().getOwnerName(this);
+            }
         }
         return this.ownerName;
     }
 
     public long getCreatetAT() {
         if (this.createtAT == 0) {
-            this.createtAT = new CrafterFile().getCreatetAT(this);
+            if(new CrafterFile().contains(this)) {
+                this.createtAT = new CrafterFile().getCreatetAT(this);
+            }
         }
         return this.createtAT;
     }
 
-    public Crafter getAllData(){
+    public Crafter getAllData() {
         this.getCrafter();
         this.getRezept();
         this.getOwnerUUID();

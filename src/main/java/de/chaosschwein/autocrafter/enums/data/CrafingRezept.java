@@ -6,12 +6,12 @@ import org.bukkit.Material;
 import java.util.HashMap;
 
 public enum CrafingRezept {
-    OAK_PLANKS(new HashMap<String,Integer>(){{put(Material.OAK_WOOD.name(), 1);}}, Material.OAK_PLANKS.name(), 4,1),
-    SPRUCE_PLANKS(new HashMap<String,Integer>(){{put(Material.SPRUCE_WOOD.name(), 1);}}, Material.SPRUCE_PLANKS.name(), 4,1),
-    BIRCH_PLANKS(new HashMap<String,Integer>(){{put(Material.BIRCH_WOOD.name(), 1);}}, Material.BIRCH_PLANKS.name(), 4,1),
-    JUNGLE_PLANKS(new HashMap<String,Integer>(){{put(Material.JUNGLE_WOOD.name(), 1);}}, Material.JUNGLE_PLANKS.name(), 4,1),
-    ACACIA_PLANKS(new HashMap<String,Integer>(){{put(Material.ACACIA_WOOD.name(), 1);}}, Material.ACACIA_PLANKS.name(), 4,1),
-    DARK_OAK_PLANKS(new HashMap<String,Integer>(){{put(Material.DARK_OAK_WOOD.name(), 1);}}, Material.DARK_OAK_PLANKS.name(), 4,1),
+    OAK_PLANKS(new HashMap<String,Integer>(){{put(Material.OAK_LOG.name(), 1);}}, Material.OAK_PLANKS.name(), 4,1),
+    SPRUCE_PLANKS(new HashMap<String,Integer>(){{put(Material.SPRUCE_LOG.name(), 1);}}, Material.SPRUCE_PLANKS.name(), 4,1),
+    BIRCH_PLANKS(new HashMap<String,Integer>(){{put(Material.BIRCH_LOG.name(), 1);}}, Material.BIRCH_PLANKS.name(), 4,1),
+    JUNGLE_PLANKS(new HashMap<String,Integer>(){{put(Material.JUNGLE_LOG.name(), 1);}}, Material.JUNGLE_PLANKS.name(), 4,1),
+    ACACIA_PLANKS(new HashMap<String,Integer>(){{put(Material.ACACIA_LOG.name(), 1);}}, Material.ACACIA_PLANKS.name(), 4,1),
+    DARK_OAK_PLANKS(new HashMap<String,Integer>(){{put(Material.DARK_OAK_LOG.name(), 1);}}, Material.DARK_OAK_PLANKS.name(), 4,1),
     CRIMSON_PLANKS(new HashMap<String,Integer>(){{put(Material.CRIMSON_STEM.name(), 1);}}, Material.CRIMSON_PLANKS.name(), 4,1),
     WARPED_PLANKS(new HashMap<String,Integer>(){{put(Material.WARPED_STEM.name(), 1);}}, Material.WARPED_PLANKS.name(), 4,1),
 
@@ -90,7 +90,7 @@ public enum CrafingRezept {
     FENCE(new HashMap<String,Integer>(){{put("PLANKS", 4);put(Material.STICK.name(), 2);}}, Material.OAK_FENCE.name(), 3,1),
     FENCE_GATE(new HashMap<String,Integer>(){{put("PLANKS", 2);put(Material.STICK.name(), 4);}}, Material.OAK_FENCE_GATE.name(), 1,1),
     PAINTING(new HashMap<String,Integer>(){{put(Material.STICK.name(), 8);put(Material.WHITE_WOOL.name(),1);}}, Material.PAINTING.name(), 1,1),
-    BED(new HashMap<String,Integer>(){{put("PLANKS", 3);put(Material.WHITE_WOOL.name(),3);}}, Material.WHITE_BED.name(), 1,1),
+    BED(new HashMap<String,Integer>(){{put("PLANKS", 3);put("WOOL",3);}}, Material.WHITE_BED.name(), 1,1),
 
 
     GLOWSTONE(new HashMap<String,Integer>(){{put(Material.GLOWSTONE_DUST.name(), 4);}}, Material.GLOWSTONE.name(), 1,1),
@@ -321,12 +321,12 @@ public enum CrafingRezept {
     END_CRYSTAL(new HashMap<String,Integer>(){{put(Material.GHAST_TEAR.name(), 1);put(Material.ENDER_EYE.name(), 1);put(Material.GLASS.name(), 7);}}, Material.END_CRYSTAL.name(), 1,1),
     IRON_NUGGET(new HashMap<String,Integer>(){{put(Material.IRON_INGOT.name(), 1);}}, Material.IRON_NUGGET.name(), 9,1),
     IRON_INGOT(new HashMap<String,Integer>(){{put(Material.IRON_NUGGET.name(), 9);}}, Material.IRON_INGOT.name(), 1,1),
-    CAMPFIRE(new HashMap<String,Integer>(){{put(Material.COAL.name(), 1);put(Material.STICK.name(), 3);put(Material.JUNGLE_WOOD.name(), 3);}}, Material.CAMPFIRE.name(), 1,1),
-    SOUL_CAMPFIRE(new HashMap<String,Integer>(){{put(Material.SOUL_SAND.name(), 1);put(Material.STICK.name(), 3);put(Material.JUNGLE_WOOD.name(), 3);}}, Material.SOUL_CAMPFIRE.name(), 1,1),
+    CAMPFIRE(new HashMap<String,Integer>(){{put(Material.COAL.name(), 1);put(Material.STICK.name(), 3);put(Material.JUNGLE_LOG.name(), 3);}}, Material.CAMPFIRE.name(), 1,1),
+    SOUL_CAMPFIRE(new HashMap<String,Integer>(){{put(Material.SOUL_SAND.name(), 1);put(Material.STICK.name(), 3);put(Material.JUNGLE_LOG.name(), 3);}}, Material.SOUL_CAMPFIRE.name(), 1,1),
     SCAFFOLDING(new HashMap<String,Integer>(){{put(Material.STICK.name(), 1);put(Material.BAMBOO.name(), 6);}}, Material.SCAFFOLDING.name(), 6,1),
     BARREL(new HashMap<String,Integer>(){{put(Material.OAK_PLANKS.name(), 6);put(Material.OAK_SLAB.name(), 2);}}, Material.BARREL.name(), 1,1),
     BLAST_FURNACE(new HashMap<String,Integer>(){{put(Material.IRON_INGOT.name(), 5);put(Material.FURNACE.name(), 1);put(Material.SMOOTH_STONE.name(), 3);}}, Material.BLAST_FURNACE.name(), 1,1),
-    SMOKER(new HashMap<String,Integer>(){{put(Material.FURNACE.name(), 1);put(Material.OAK_WOOD.name(), 4);}}, Material.SMOKER.name(), 1,1),
+    SMOKER(new HashMap<String,Integer>(){{put(Material.FURNACE.name(), 1);put(Material.OAK_LOG.name(), 4);}}, Material.SMOKER.name(), 1,1),
     CARTOGRAPHY_TABLE(new HashMap<String,Integer>(){{put("PLANKS", 4);put(Material.PAPER.name(), 2);}}, Material.CARTOGRAPHY_TABLE.name(), 1,1),
     COMPOSTER(new HashMap<String,Integer>(){{put(Material.OAK_SLAB.name(), 7);}}, Material.COMPOSTER.name(), 1,1),
     FLETCHING_TABLE(new HashMap<String,Integer>(){{put("PLANKS", 4);put(Material.FLINT.name(), 2);}}, Material.FLETCHING_TABLE.name(), 1,1),

@@ -39,12 +39,16 @@ public class InventoryListener implements Listener {
                     if(itemname.equals("§aAutoCrafter Erstellen")) {
                         e.setCancelled(true);
                         CrafingRezept cr = null;
-                        ItemStack item1 = p.getInventory().getItem(4);
+                        ItemStack item1 = e.getInventory().getItem(4);
                         ItemStack item2 = e.getInventory().getItem(22);
                         if((item1 != null && item1.getType() != Material.AIR)){
                             cr = CrafingRezept.getRezept(item1.getType());
+                            p.getInventory().addItem(item1);
+                            p.updateInventory();
                         }else if((item2 != null && item2.getType() != Material.BOOK)) {
                             cr = CrafingRezept.getRezept(item2.getType());
+                            p.getInventory().addItem(item2);
+                            p.updateInventory();
                         }else{
                             p.closeInventory();
                             msg.send("§7Du musst ein Item reinlegen!");
@@ -60,9 +64,13 @@ public class InventoryListener implements Listener {
                             msg.send("§7Du musst einen Crafter auswählen!");
                             return;
                         }
-                        new CrafterFile().save(p, AutoCommand.crafter.get(p),cr);
-                        p.closeInventory();
-                        msg.send("§7Crafter erstellt!");
+                        if(new CrafterFile().save(p, AutoCommand.crafter.get(p).getCrafter(),cr)) {
+                            p.closeInventory();
+                            msg.send("§7Crafter erstellt!");
+                        }else {
+                            p.closeInventory();
+                            msg.send("§7Crafter konnte nicht erstellt werden!");
+                        }
                     }
                 }
             }

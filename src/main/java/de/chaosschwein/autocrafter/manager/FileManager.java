@@ -22,7 +22,7 @@ public class FileManager {
     }
 
     public FileManager(String dir, String filename) {
-        this.dir = "plugins/System/"+dir+"/";
+        this.dir = "plugins/AutoCrafter/"+dir+"/";
         this.filename = filename+".yml";
     }
 

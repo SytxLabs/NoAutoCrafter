@@ -3,8 +3,11 @@ package de.chaosschwein.autocrafter.cmd;
 import de.chaosschwein.autocrafter.enums.Crafter;
 import de.chaosschwein.autocrafter.utils.CheckBlocks;
 import de.chaosschwein.autocrafter.utils.InventoryCreator;
+import de.chaosschwein.autocrafter.utils.Message;
 import de.chaosschwein.autocrafter.utils.Utils;
 import org.bukkit.block.Block;
+import org.bukkit.block.Dispenser;
+import org.bukkit.block.data.Directional;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -18,12 +21,13 @@ public class AutoCommand implements CommandExecutor {
         if(sender instanceof Player){
             Player p = (Player) sender;
             Block block = Utils.getTargetBlock(p,5);
+            Message msg = new Message(p);
             if(new CheckBlocks(block).isCrafter()) {
                 crafter.put(p, new Crafter(block.getLocation()).getCrafter());
                 new InventoryCreator(p).open();
-                p.sendMessage("§aAutoCrafter: §7Dieser Block ist ein Crafter!");
+                msg.send("§7Dieser Block ist ein Crafter!");
             }else{
-                p.sendMessage("§aAutoCrafter: §7Dieser Block ist kein Crafter!");
+                msg.send("§7Dieser Block ist kein Crafter!");
             }
 
             return true;
