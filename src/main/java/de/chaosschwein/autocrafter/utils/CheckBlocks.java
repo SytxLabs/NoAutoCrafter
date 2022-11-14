@@ -1,12 +1,9 @@
 package de.chaosschwein.autocrafter.utils;
 
-import de.chaosschwein.autocrafter.enums.Crafter;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.*;
 import org.bukkit.block.data.Directional;
-
-import java.util.Objects;
 
 public class CheckBlocks {
 
@@ -18,7 +15,7 @@ public class CheckBlocks {
 
     public boolean isCrafter() {
         Block b = this.block;
-        boolean iscrafter = false;
+        boolean isCrafter = false;
         Location loc = b.getLocation();
         if (b.getType() != Material.DISPENSER) {
             return false;
@@ -27,31 +24,29 @@ public class CheckBlocks {
             BlockFace face = ((Directional) b.getBlockData()).getFacing();
             switch (face) {
                 case DOWN:
-                    iscrafter = (b.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() - 1, loc.getBlockZ()).getType() == Material.CRAFTING_TABLE &&
+                    isCrafter = (b.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() - 1, loc.getBlockZ()).getType() == Material.CRAFTING_TABLE &&
                             b.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() - 2, loc.getBlockZ()).getType() == Material.HOPPER);
                     break;
                 case NORTH:
-                    iscrafter = (b.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ() - 1).getType() == Material.CRAFTING_TABLE &&
+                    isCrafter = (b.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ() - 1).getType() == Material.CRAFTING_TABLE &&
                             b.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() - 1, loc.getBlockZ() - 1).getType() == Material.HOPPER);
                     break;
                 case SOUTH:
-                    iscrafter = (b.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ() + 1).getType() == Material.CRAFTING_TABLE &&
+                    isCrafter = (b.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ() + 1).getType() == Material.CRAFTING_TABLE &&
                             b.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() - 1, loc.getBlockZ() + 1).getType() == Material.HOPPER);
                     break;
                 case WEST:
-                    iscrafter = (b.getWorld().getBlockAt(loc.getBlockX() - 1, loc.getBlockY(), loc.getBlockZ()).getType() == Material.CRAFTING_TABLE &&
+                    isCrafter = (b.getWorld().getBlockAt(loc.getBlockX() - 1, loc.getBlockY(), loc.getBlockZ()).getType() == Material.CRAFTING_TABLE &&
                             b.getWorld().getBlockAt(loc.getBlockX() - 1, loc.getBlockY() - 1, loc.getBlockZ()).getType() == Material.HOPPER);
                     break;
                 case EAST:
-                    iscrafter = (b.getWorld().getBlockAt(loc.getBlockX() + 1, loc.getBlockY(), loc.getBlockZ()).getType() == Material.CRAFTING_TABLE &&
+                    isCrafter = (b.getWorld().getBlockAt(loc.getBlockX() + 1, loc.getBlockY(), loc.getBlockZ()).getType() == Material.CRAFTING_TABLE &&
                             b.getWorld().getBlockAt(loc.getBlockX() + 1, loc.getBlockY() - 1, loc.getBlockZ()).getType() == Material.HOPPER);
                     break;
                 default:
                     break;
             }
         }
-        return iscrafter;
+        return isCrafter;
     }
-
-
 }

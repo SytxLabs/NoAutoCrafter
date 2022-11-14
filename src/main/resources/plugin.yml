@@ -1,7 +1,7 @@
 name: AutoCrafter
 version: '${project.version}'
 main: de.chaosschwein.autocrafter.main.AutoMain
-api-version: 1.16
+api-version: 1.19
 authors: [ ChaosSchwein ]
 description: Minecraft AutoCrafter Plugin
 website: https://sytx.eu

@@ -49,6 +49,16 @@ public class FileManager {
         return getConfig().getString(key);
     }
 
+    public Object read(String key, boolean objekt){
+        if (objekt) {
+            return getConfig().get(key);
+        }
+        if(getConfig().get(key) instanceof String){
+            return ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(getConfig().getString(key)));
+        }
+        return getConfig().getString(key);
+    }
+
     public void write(String key,Object value){
         FileConfiguration cfg = getConfig();
         cfg.set(key, value);
@@ -63,5 +73,4 @@ public class FileManager {
         }
         saveConfig(cfg);
     }
-
 }

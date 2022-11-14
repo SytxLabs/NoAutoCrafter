@@ -15,6 +15,8 @@ public final class AutoMain extends JavaPlugin {
 
     public static FileManager config;
     public static String prefix = "&8[&aAutoCrafter§8] &7";
+    public static boolean crafter = true;
+
     public static AutoMain instand;
     @Override
     public void onEnable() {
@@ -22,9 +24,11 @@ public final class AutoMain extends JavaPlugin {
         config = new FileManager("config");
         config.writeDefault(new HashMap<String,Object>(){{
             put("prefix", "&8[&aAutoCrafter§8] &7");
+            put("crafter", true);
+            put("breaker", true);
         }});
         prefix = config.read("prefix");
-
+        crafter = (boolean)config.read("crafter", true);
 
         Bukkit.getPluginManager().registerEvents(new dis(), this);
         Bukkit.getPluginManager().registerEvents(new InventoryListener(),this);
