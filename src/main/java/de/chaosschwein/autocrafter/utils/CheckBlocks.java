@@ -2,7 +2,8 @@ package de.chaosschwein.autocrafter.utils;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.*;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Directional;
 
 public class CheckBlocks {
@@ -69,7 +70,7 @@ public class CheckBlocks {
                     return (b.getWorld().getBlockAt(loc.getBlockX() - 1, loc.getBlockY() + 1, loc.getBlockZ()).getType() == Material.STICKY_PISTON ||
                             b.getWorld().getBlockAt(loc.getBlockX() - 1, loc.getBlockY() - 1, loc.getBlockZ()).getType() == Material.STICKY_PISTON);
                 case EAST:
-                    return  (b.getWorld().getBlockAt(loc.getBlockX() + 1, loc.getBlockY() + 1, loc.getBlockZ()).getType() == Material.STICKY_PISTON ||
+                    return (b.getWorld().getBlockAt(loc.getBlockX() + 1, loc.getBlockY() + 1, loc.getBlockZ()).getType() == Material.STICKY_PISTON ||
                             b.getWorld().getBlockAt(loc.getBlockX() + 1, loc.getBlockY() - 1, loc.getBlockZ()).getType() == Material.STICKY_PISTON);
                 case UP:
                     return b.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() + 2, loc.getBlockZ()).getType() == Material.STICKY_PISTON;

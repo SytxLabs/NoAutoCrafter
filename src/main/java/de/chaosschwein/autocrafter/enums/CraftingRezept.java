@@ -8,7 +8,7 @@ import java.util.HashMap;
 public class CraftingRezept {
 
     private ItemStack[] ingredients = new ItemStack[9];
-    private HashMap<Material, Integer> results = new HashMap<>();;
+    private HashMap<Material, Integer> results = new HashMap<>();
 
     public CraftingRezept() {
 
@@ -17,31 +17,6 @@ public class CraftingRezept {
     public CraftingRezept(ItemStack[] ingredients, HashMap<Material, Integer> results) {
         this.ingredients = ingredients;
         this.results = results;
-    }
-
-    public ItemStack[] getIngredients() {
-        return ingredients;
-    }
-
-    public HashMap<Material, Integer> getResults() {
-        return results;
-    }
-
-    public String toFileString() {
-        StringBuilder sb = new StringBuilder();
-
-        for (ItemStack i : ingredients) {
-            if (i == null || i.getType() == Material.AIR) {
-                sb.append("AIR:0;");
-                continue;
-            }
-            sb.append(i.getType().name()).append(":").append(i.getAmount()).append(";");
-        }
-        sb.append("||");
-        for (Material m : results.keySet()) {
-            sb.append(m.name()).append(":").append(results.get(m)).append(";");
-        }
-        return sb.toString();
     }
 
     public static CraftingRezept fromFileString(String fileString) {
@@ -67,5 +42,30 @@ public class CraftingRezept {
             rezept.results.put(Material.getMaterial(split1[0]), Integer.parseInt(split1[1]));
         }
         return rezept;
+    }
+
+    public ItemStack[] getIngredients() {
+        return ingredients;
+    }
+
+    public HashMap<Material, Integer> getResults() {
+        return results;
+    }
+
+    public String toFileString() {
+        StringBuilder sb = new StringBuilder();
+
+        for (ItemStack i : ingredients) {
+            if (i == null || i.getType() == Material.AIR) {
+                sb.append("AIR:0;");
+                continue;
+            }
+            sb.append(i.getType().name()).append(":").append(i.getAmount()).append(";");
+        }
+        sb.append("||");
+        for (Material m : results.keySet()) {
+            sb.append(m.name()).append(":").append(results.get(m)).append(";");
+        }
+        return sb.toString();
     }
 }

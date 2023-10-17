@@ -28,7 +28,7 @@ public class Utils {
     public static ArrayList<ItemStack> getItemsInBlock(Block b) {
         ArrayList<ItemStack> iStack = new ArrayList<>();
         Inventory inv = getBlockInventory(b);
-        if(inv == null) {
+        if (inv == null) {
             return iStack;
         }
         for (int i = 0; i < inv.getSize(); i++) {
@@ -64,12 +64,12 @@ public class Utils {
             }
             int newAmount = itemStack.getAmount() - amount;
             amount -= itemStack.getAmount();
-            if(newAmount <= 0) {
+            if (newAmount <= 0) {
                 inventory.remove(itemStack);
             } else {
                 itemStack.setAmount(newAmount);
             }
-            if(amount <= 0) {
+            if (amount <= 0) {
                 break;
             }
         }
@@ -77,7 +77,8 @@ public class Utils {
             try {
                 //noinspection UnstableApiUsage
                 ((Player) player).updateInventory();
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         });
     }
 
@@ -95,7 +96,7 @@ public class Utils {
             itemStack.setAmount(newAmount);
             dispenser.getSnapshotInventory().setItem(i, itemStack.getAmount() <= 0 ? null : itemStack);
             dispenser.update();
-            if(amount <= 0) {
+            if (amount <= 0) {
                 break;
             }
         }
@@ -103,7 +104,8 @@ public class Utils {
             try {
                 //noinspection UnstableApiUsage
                 ((Player) player).updateInventory();
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         });
     }
 
@@ -116,11 +118,12 @@ public class Utils {
             try {
                 //noinspection UnstableApiUsage
                 ((Player) player).updateInventory();
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         });
     }
 
-    public static boolean hasNotEnoughPlace(Inventory inventory, Material material, int amount){
+    public static boolean hasNotEnoughPlace(Inventory inventory, Material material, int amount) {
         int freeSlots = 0;
         for (ItemStack itemStack : inventory.getContents()) {
             if (itemStack == null) {
@@ -129,7 +132,7 @@ public class Utils {
             }
             if (itemStack.getType() == material) {
                 int newAmount = itemStack.getAmount() + amount;
-                if(newAmount <= itemStack.getMaxStackSize()) {
+                if (newAmount <= itemStack.getMaxStackSize()) {
                     return false;
                 }
             }
@@ -143,10 +146,10 @@ public class Utils {
     }
 
     public static boolean hasPermission(Player player, String permission, boolean sendMessage) {
-        if(permission.equalsIgnoreCase("") || player.hasPermission(permission)) {
+        if (permission.equalsIgnoreCase("") || player.hasPermission(permission)) {
             return true;
         }
-        if(sendMessage) {
+        if (sendMessage) {
             (new Message(player)).noPermission();
         }
         return false;

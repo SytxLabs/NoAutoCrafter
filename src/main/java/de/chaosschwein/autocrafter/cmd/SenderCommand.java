@@ -16,12 +16,12 @@ import java.util.HashMap;
 
 public class SenderCommand implements CommandExecutor {
 
-    public static HashMap<Player, Block> sender = new HashMap<>();
+    public static final HashMap<Player, Block> sender = new HashMap<>();
 
     @SuppressWarnings("NullableProblems")
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if(sender instanceof Player){
+        if (sender instanceof Player p) {
             if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
                 if (!Utils.hasPermission((Player) sender, AutoMain.permission.CrafterAdmin)) {
                     return true;
@@ -30,23 +30,22 @@ public class SenderCommand implements CommandExecutor {
                 AutoMain.reload();
                 return true;
             }
-            if(!AutoMain.crafter) {
+            if (!AutoMain.crafter) {
                 return true;
             }
             if (!Utils.hasPermission((Player) sender, AutoMain.permission.SenderCreate)) {
                 return true;
             }
-            Player p = (Player) sender;
-            Block block = Utils.getTargetBlock(p,5);
+            Block block = Utils.getTargetBlock(p, 5);
             Message msg = new Message(p);
-            if(new CheckBlocks(block).isSender()) {
-                if(!new Transporter().containsSender(block.getLocation())) {
+            if (new CheckBlocks(block).isSender()) {
+                if (!new Transporter().containsSender(block.getLocation())) {
                     SenderCommand.sender.put(p, block);
                     new InventoryCreator(p).openSender();
-                }else{
+                } else {
                     msg.send(AutoMain.language.SenderAlreadyExists);
                 }
-            }else{
+            } else {
                 msg.send(AutoMain.language.SenderIsFalse);
             }
 

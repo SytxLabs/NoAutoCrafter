@@ -16,12 +16,12 @@ import java.util.HashMap;
 
 public class ReceiverCommand implements CommandExecutor {
 
-    public static HashMap<Player, Block> receiver = new HashMap<>();
+    public static final HashMap<Player, Block> receiver = new HashMap<>();
 
     @SuppressWarnings("NullableProblems")
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if(sender instanceof Player){
+        if (sender instanceof Player p) {
             if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
                 if (!Utils.hasPermission((Player) sender, AutoMain.permission.CrafterAdmin)) {
                     return true;
@@ -30,23 +30,22 @@ public class ReceiverCommand implements CommandExecutor {
                 AutoMain.reload();
                 return true;
             }
-            if(!AutoMain.crafter) {
+            if (!AutoMain.crafter) {
                 return true;
             }
             if (!Utils.hasPermission((Player) sender, AutoMain.permission.ReceiverCreate)) {
                 return true;
             }
-            Player p = (Player) sender;
-            Block block = Utils.getTargetBlock(p,5);
+            Block block = Utils.getTargetBlock(p, 5);
             Message msg = new Message(p);
-            if(new CheckBlocks(block).isReceiver()) {
-                if(!new Transporter().containsReceiver(block.getLocation())) {
+            if (new CheckBlocks(block).isReceiver()) {
+                if (!new Transporter().containsReceiver(block.getLocation())) {
                     receiver.put(p, block);
                     new InventoryCreator(p).openReceiver();
-                }else{
+                } else {
                     msg.send(AutoMain.language.ReceiverAlreadyExists);
                 }
-            }else{
+            } else {
                 msg.send(AutoMain.language.ReceiverIsFalse);
             }
 

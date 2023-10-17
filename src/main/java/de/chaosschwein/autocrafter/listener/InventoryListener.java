@@ -1,9 +1,12 @@
 package de.chaosschwein.autocrafter.listener;
 
-import de.chaosschwein.autocrafter.cmd.*;
+import de.chaosschwein.autocrafter.cmd.AutoCommand;
+import de.chaosschwein.autocrafter.cmd.ReceiverCommand;
+import de.chaosschwein.autocrafter.cmd.SenderCommand;
 import de.chaosschwein.autocrafter.enums.CraftingRezept;
 import de.chaosschwein.autocrafter.main.AutoMain;
-import de.chaosschwein.autocrafter.manager.file.*;
+import de.chaosschwein.autocrafter.manager.file.CrafterFile;
+import de.chaosschwein.autocrafter.manager.file.Transporter;
 import de.chaosschwein.autocrafter.utils.Message;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -19,7 +22,7 @@ public class InventoryListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
-        if(e.getWhoClicked() instanceof Player p) {
+        if (e.getWhoClicked() instanceof Player p) {
             String title = e.getView().getTitle();
             ItemStack item = e.getCurrentItem();
             Message msg = new Message(p);
@@ -33,7 +36,9 @@ public class InventoryListener implements Listener {
                     }
                     items[i] = new ItemStack(iStack.getType(), iStack.getAmount());
                 }
-                CraftingRezept rezept = new CraftingRezept(items, new HashMap<>() {{ put(item.getType(), item.getAmount()); }});
+                CraftingRezept rezept = new CraftingRezept(items, new HashMap<>() {{
+                    put(item.getType(), item.getAmount());
+                }});
                 CrafterFile crafterFile = new CrafterFile();
                 crafterFile.save(p, AutoCommand.crafter.get(p), rezept);
 
@@ -41,24 +46,23 @@ public class InventoryListener implements Listener {
                 p.closeInventory();
                 return;
             }
-            if(item == null || item.getType() == Material.AIR || title.isEmpty() || !item.hasItemMeta() ||item.getItemMeta() == null) {return;}
+            if (item == null || item.getType() == Material.AIR || title.isEmpty() || !item.hasItemMeta() || item.getItemMeta() == null) {
+                return;
+            }
             String itemName = item.getItemMeta().getDisplayName();
             if ("§d§lReceiver".equals(title) || "§d§lSender".equals(title)) {
                 if (itemName.equalsIgnoreCase("§e")) {
                     e.setCancelled(true);
                 }
-                if (itemName.equals("§cZurück")) {
+                if (itemName.equals(AutoMain.language.InventoryBack)) {
                     e.setCancelled(true);
                     p.closeInventory();
                 }
-                if (itemName.equalsIgnoreCase("§dItem Reinlegen")) {
+                if (itemName.equalsIgnoreCase(AutoMain.language.InventoryAddItem)) {
                     e.setCancelled(true);
                     msg.send(AutoMain.language.CrafterInsertItem);
                 }
-                if (itemName.equals("§aAutoCrafter Erstellen")) {
-                    e.setCancelled(true);
-                }
-                if (itemName.equals("§aReceiver Erstellen")) {
+                if (itemName.equals(AutoMain.language.InventoryCreateReceiver)) {
                     e.setCancelled(true);
                     Material mat;
                     ItemStack item1 = e.getInventory().getItem(4);
@@ -67,7 +71,7 @@ public class InventoryListener implements Listener {
                         mat = item1.getType();
                         p.getInventory().addItem(item1);
                         p.updateInventory();
-                    } else if(item2 != null && item2.getType() != Material.AIR) {
+                    } else if (item2 != null && item2.getType() != Material.AIR) {
                         mat = item2.getType();
                         p.getInventory().addItem(item2);
                         p.updateInventory();
@@ -93,7 +97,7 @@ public class InventoryListener implements Listener {
                         msg.send(AutoMain.language.error);
                     }
                 }
-                if (itemName.equals("§aSender Erstellen")) {
+                if (itemName.equals(AutoMain.language.InventoryCreateSender)) {
                     e.setCancelled(true);
                     Material mat;
                     ItemStack item1 = e.getInventory().getItem(4);
@@ -102,7 +106,7 @@ public class InventoryListener implements Listener {
                         mat = item1.getType();
                         p.getInventory().addItem(item1);
                         p.updateInventory();
-                    } else if(item2 != null && item2.getType() != Material.AIR) {
+                    } else if (item2 != null && item2.getType() != Material.AIR) {
                         mat = item2.getType();
                         p.getInventory().addItem(item2);
                         p.updateInventory();

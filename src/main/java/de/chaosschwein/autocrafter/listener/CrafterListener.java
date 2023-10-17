@@ -1,17 +1,31 @@
 package de.chaosschwein.autocrafter.listener;
 
-import de.chaosschwein.autocrafter.enums.*;
+import de.chaosschwein.autocrafter.enums.Breaker;
+import de.chaosschwein.autocrafter.enums.Crafter;
+import de.chaosschwein.autocrafter.enums.CraftingRezept;
+import de.chaosschwein.autocrafter.enums.Placer;
 import de.chaosschwein.autocrafter.main.AutoMain;
-import de.chaosschwein.autocrafter.manager.file.*;
-import de.chaosschwein.autocrafter.utils.*;
-import org.bukkit.*;
-import org.bukkit.block.*;
+import de.chaosschwein.autocrafter.manager.file.CrafterFile;
+import de.chaosschwein.autocrafter.manager.file.Transporter;
+import de.chaosschwein.autocrafter.utils.CheckBlocks;
+import de.chaosschwein.autocrafter.utils.DataCache;
+import de.chaosschwein.autocrafter.utils.Message;
+import de.chaosschwein.autocrafter.utils.Utils;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.block.Block;
+import org.bukkit.block.Chest;
+import org.bukkit.block.Dispenser;
 import org.bukkit.entity.Player;
-import org.bukkit.event.*;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
-import org.bukkit.inventory.*;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
 import java.util.Objects;
@@ -23,7 +37,7 @@ public class CrafterListener implements Listener {
         if (e.getBlock().getType() == Material.DISPENSER) {
             Dispenser dispenser = (Dispenser) e.getBlock().getState();
             if (new CheckBlocks(dispenser.getBlock()).isCrafter()) {
-                if(!AutoMain.crafter) {
+                if (!AutoMain.crafter) {
                     return;
                 }
                 Crafter c = DataCache.getCrafter(dispenser.getLocation());
@@ -34,7 +48,7 @@ public class CrafterListener implements Listener {
                         Bukkit.getScheduler().scheduleSyncDelayedTask(AutoMain.instance, () -> {
                             ItemStack[] di = Utils.getBlockInventory(dispenser.getBlock()).getContents();
                             HashMap<Material, Integer> ingredients = new HashMap<>();
-                            for (ItemStack i: rezept.getIngredients()) {
+                            for (ItemStack i : rezept.getIngredients()) {
                                 if (i == null || i.getType() == Material.AIR) {
                                     continue;
                                 }
@@ -75,7 +89,7 @@ public class CrafterListener implements Listener {
 
                             if (ingredients.isEmpty()) {
                                 dispenser.update();
-                                for (Material m: itemsToRemove.keySet()) {
+                                for (Material m : itemsToRemove.keySet()) {
                                     Utils.removeItem(dispenser, m, itemsToRemove.get(m) - 1);
                                 }
                                 dispenser.update();
@@ -130,7 +144,7 @@ public class CrafterListener implements Listener {
             if (new CheckBlocks(e.getBlock()).isCrafter()) {
                 Crafter c = new Crafter(e.getBlock().getLocation()).getAllData();
                 DataCache.removeCrafter(c.dispenser.getLocation());
-                if(new CrafterFile().contains(c)) {
+                if (new CrafterFile().contains(c)) {
                     new CrafterFile().delete(c);
                     msg.send(AutoMain.language.CrafterDeleted);
                 }
@@ -142,41 +156,61 @@ public class CrafterListener implements Listener {
                 return;
             }
             Block dispenser = null;
-            if ((e.getBlock().getLocation().add(+1, 0, 0).getBlock().getType() == Material.DISPENSER)) {dispenser = e.getBlock().getLocation().add(+1, 0, 0).getBlock();}
-            if ((e.getBlock().getLocation().add(-1, 0, 0).getBlock().getType() == Material.DISPENSER)){dispenser = e.getBlock().getLocation().add(-1, 0, 0).getBlock();}
-            if ((e.getBlock().getLocation().add(0, 0, -1).getBlock().getType() == Material.DISPENSER)){dispenser = e.getBlock().getLocation().add(0, 0, -1).getBlock();}
-            if ((e.getBlock().getLocation().add(0, 0, +1).getBlock().getType() == Material.DISPENSER)) {dispenser = e.getBlock().getLocation().add(0, 0, +1).getBlock();}
-            if ((e.getBlock().getLocation().add(0, +1, 0).getBlock().getType() == Material.DISPENSER)) {dispenser = e.getBlock().getLocation().add(0, +1, 0).getBlock();}
+            if ((e.getBlock().getLocation().add(+1, 0, 0).getBlock().getType() == Material.DISPENSER)) {
+                dispenser = e.getBlock().getLocation().add(+1, 0, 0).getBlock();
+            }
+            if ((e.getBlock().getLocation().add(-1, 0, 0).getBlock().getType() == Material.DISPENSER)) {
+                dispenser = e.getBlock().getLocation().add(-1, 0, 0).getBlock();
+            }
+            if ((e.getBlock().getLocation().add(0, 0, -1).getBlock().getType() == Material.DISPENSER)) {
+                dispenser = e.getBlock().getLocation().add(0, 0, -1).getBlock();
+            }
+            if ((e.getBlock().getLocation().add(0, 0, +1).getBlock().getType() == Material.DISPENSER)) {
+                dispenser = e.getBlock().getLocation().add(0, 0, +1).getBlock();
+            }
+            if ((e.getBlock().getLocation().add(0, +1, 0).getBlock().getType() == Material.DISPENSER)) {
+                dispenser = e.getBlock().getLocation().add(0, +1, 0).getBlock();
+            }
             if (dispenser == null) {
                 return;
             }
             if (new CheckBlocks(dispenser).isCrafter()) {
                 Crafter c = new Crafter(dispenser.getLocation()).getAllData();
                 DataCache.removeCrafter(c.dispenser.getLocation());
-                if(new CrafterFile().contains(c)) {
+                if (new CrafterFile().contains(c)) {
                     new CrafterFile().delete(c);
                     msg.send(AutoMain.language.CrafterDeleted);
                 }
             }
             return;
         }
-        if(e.getBlock().getType() == Material.HOPPER){
+        if (e.getBlock().getType() == Material.HOPPER) {
             if (e.getBlock().getLocation().add(0, +1, 0).getBlock().getType() != Material.CRAFTING_TABLE) {
                 return;
             }
             Block dispenser = null;
-            if ((e.getBlock().getLocation().add(+1, +1, 0).getBlock().getType() == Material.DISPENSER)) {dispenser = e.getBlock().getLocation().add(+1, +1, 0).getBlock();}
-            if ((e.getBlock().getLocation().add(-1, +1, 0).getBlock().getType() == Material.DISPENSER)){dispenser = e.getBlock().getLocation().add(-1, +1, 0).getBlock();}
-            if ((e.getBlock().getLocation().add(0, +1, -1).getBlock().getType() == Material.DISPENSER)){dispenser = e.getBlock().getLocation().add(0, +1, -1).getBlock();}
-            if ((e.getBlock().getLocation().add(0, +1, +1).getBlock().getType() == Material.DISPENSER)) {dispenser = e.getBlock().getLocation().add(0, +1, +1).getBlock();}
-            if ((e.getBlock().getLocation().add(0, +2, 0).getBlock().getType() == Material.DISPENSER)) {dispenser = e.getBlock().getLocation().add(0, +2, 0).getBlock();}
+            if ((e.getBlock().getLocation().add(+1, +1, 0).getBlock().getType() == Material.DISPENSER)) {
+                dispenser = e.getBlock().getLocation().add(+1, +1, 0).getBlock();
+            }
+            if ((e.getBlock().getLocation().add(-1, +1, 0).getBlock().getType() == Material.DISPENSER)) {
+                dispenser = e.getBlock().getLocation().add(-1, +1, 0).getBlock();
+            }
+            if ((e.getBlock().getLocation().add(0, +1, -1).getBlock().getType() == Material.DISPENSER)) {
+                dispenser = e.getBlock().getLocation().add(0, +1, -1).getBlock();
+            }
+            if ((e.getBlock().getLocation().add(0, +1, +1).getBlock().getType() == Material.DISPENSER)) {
+                dispenser = e.getBlock().getLocation().add(0, +1, +1).getBlock();
+            }
+            if ((e.getBlock().getLocation().add(0, +2, 0).getBlock().getType() == Material.DISPENSER)) {
+                dispenser = e.getBlock().getLocation().add(0, +2, 0).getBlock();
+            }
             if (dispenser == null) {
                 return;
             }
             if (new CheckBlocks(dispenser).isCrafter()) {
                 Crafter c = new Crafter(dispenser.getLocation()).getAllData();
                 DataCache.removeCrafter(c.dispenser.getLocation());
-                if(new CrafterFile().contains(c)) {
+                if (new CrafterFile().contains(c)) {
                     new CrafterFile().delete(c);
                     msg.send(AutoMain.language.CrafterDeleted);
                 }
@@ -189,7 +223,7 @@ public class CrafterListener implements Listener {
         Message msg = new Message(e.getPlayer());
         if (e.getBlock().getType() == Material.TRAPPED_CHEST) {
             if (new CheckBlocks(e.getBlock()).isReceiver()) {
-                if(new Transporter().containsReceiver(e.getBlock().getLocation())) {
+                if (new Transporter().containsReceiver(e.getBlock().getLocation())) {
                     new Transporter().removeReceivers(e.getBlock().getLocation());
                     msg.send(AutoMain.language.ReceiverDeleted);
                 }
@@ -202,20 +236,20 @@ public class CrafterListener implements Listener {
             }
             Block dispenser = e.getBlock().getLocation().add(0, -1, 0).getBlock();
             if (new CheckBlocks(dispenser).isReceiver()) {
-                if(new Transporter().containsReceiver(dispenser.getLocation())) {
+                if (new Transporter().containsReceiver(dispenser.getLocation())) {
                     new Transporter().removeReceivers(dispenser.getLocation());
                     msg.send(AutoMain.language.ReceiverDeleted);
                 }
             }
             return;
         }
-        if(e.getBlock().getType() == Material.HOPPER){
+        if (e.getBlock().getType() == Material.HOPPER) {
             if (e.getBlock().getLocation().add(0, +1, 0).getBlock().getType() != Material.TRAPPED_CHEST) {
                 return;
             }
             Block dispenser = e.getBlock().getLocation().add(0, +1, 0).getBlock();
             if (new CheckBlocks(dispenser).isReceiver()) {
-                if(new Transporter().containsReceiver(dispenser.getLocation())) {
+                if (new Transporter().containsReceiver(dispenser.getLocation())) {
                     new Transporter().removeReceivers(dispenser.getLocation());
                     msg.send(AutoMain.language.ReceiverDeleted);
                 }
@@ -228,7 +262,7 @@ public class CrafterListener implements Listener {
         Message msg = new Message(e.getPlayer());
         if (e.getBlock().getType() == Material.TRAPPED_CHEST) {
             if (new CheckBlocks(e.getBlock()).isSender()) {
-                if(new Transporter().containsSender(e.getBlock().getLocation())) {
+                if (new Transporter().containsSender(e.getBlock().getLocation())) {
                     new Transporter().removeSender(e.getBlock().getLocation());
                     msg.send(AutoMain.language.SenderDeleted);
                 }
@@ -241,32 +275,28 @@ public class CrafterListener implements Listener {
             }
             Block dispenser = e.getBlock().getLocation().add(0, -1, 0).getBlock();
             if (new CheckBlocks(dispenser).isSender()) {
-                if(new Transporter().containsSender(dispenser.getLocation())) {
+                if (new Transporter().containsSender(dispenser.getLocation())) {
                     new Transporter().removeSender(dispenser.getLocation());
                     msg.send(AutoMain.language.SenderDeleted);
                 }
             }
             return;
         }
-        if(e.getBlock().getType() == Material.HOPPER){
+        if (e.getBlock().getType() == Material.HOPPER) {
             Block dispenser;
             if (e.getBlock().getLocation().add(0, 0, +1).getBlock().getType() == Material.TRAPPED_CHEST) {
                 dispenser = e.getBlock().getLocation().add(0, 0, +1).getBlock();
-            }
-            else if (e.getBlock().getLocation().add(0, 0, -1).getBlock().getType() == Material.TRAPPED_CHEST) {
+            } else if (e.getBlock().getLocation().add(0, 0, -1).getBlock().getType() == Material.TRAPPED_CHEST) {
                 dispenser = e.getBlock().getLocation().add(0, 0, -1).getBlock();
-            }
-            else if (e.getBlock().getLocation().add(+1, 0, 0).getBlock().getType() == Material.TRAPPED_CHEST) {
+            } else if (e.getBlock().getLocation().add(+1, 0, 0).getBlock().getType() == Material.TRAPPED_CHEST) {
                 dispenser = e.getBlock().getLocation().add(+1, 0, 0).getBlock();
-            }
-            else if (e.getBlock().getLocation().add(-1, 0, 0).getBlock().getType() == Material.TRAPPED_CHEST) {
+            } else if (e.getBlock().getLocation().add(-1, 0, 0).getBlock().getType() == Material.TRAPPED_CHEST) {
                 dispenser = e.getBlock().getLocation().add(-1, 0, 0).getBlock();
-            }
-            else {
+            } else {
                 return;
             }
             if (new CheckBlocks(dispenser).isSender()) {
-                if(new Transporter().containsSender(dispenser.getLocation())) {
+                if (new Transporter().containsSender(dispenser.getLocation())) {
                     new Transporter().removeSender(dispenser.getLocation());
                     msg.send(AutoMain.language.SenderDeleted);
                 }
@@ -275,14 +305,14 @@ public class CrafterListener implements Listener {
     }
 
     @EventHandler
-    public void onBlockExplode(BlockExplodeEvent e){
-        if(!e.blockList().isEmpty()) {
+    public void onBlockExplode(BlockExplodeEvent e) {
+        if (!e.blockList().isEmpty()) {
             for (Block b : e.blockList()) {
                 if (b.getType() == Material.DISPENSER) {
                     if (new CheckBlocks(b).isCrafter()) {
                         Crafter c = new Crafter(b.getLocation()).getAllData();
                         DataCache.removeCrafter(c.dispenser.getLocation());
-                        if(new CrafterFile().contains(c)) {
+                        if (new CrafterFile().contains(c)) {
                             new CrafterFile().delete(c);
                             Player p = Bukkit.getPlayer(c.getOwnerUUID());
                             if (p != null && p.isOnline()) {
@@ -297,18 +327,28 @@ public class CrafterListener implements Listener {
                         return;
                     }
                     Block dispenser = null;
-                    if ((b.getLocation().add(+1, 0, 0).getBlock().getType() == Material.DISPENSER)) {dispenser = b.getLocation().add(+1, 0, 0).getBlock();}
-                    if ((b.getLocation().add(-1, 0, 0).getBlock().getType() == Material.DISPENSER)){dispenser = b.getLocation().add(-1, 0, 0).getBlock();}
-                    if ((b.getLocation().add(0, 0, -1).getBlock().getType() == Material.DISPENSER)){dispenser = b.getLocation().add(0, 0, -1).getBlock();}
-                    if ((b.getLocation().add(0, 0, +1).getBlock().getType() == Material.DISPENSER)) {dispenser = b.getLocation().add(0, 0, +1).getBlock();}
-                    if ((b.getLocation().add(0, +1, 0).getBlock().getType() == Material.DISPENSER)) {dispenser = b.getLocation().add(0, +1, 0).getBlock();}
+                    if ((b.getLocation().add(+1, 0, 0).getBlock().getType() == Material.DISPENSER)) {
+                        dispenser = b.getLocation().add(+1, 0, 0).getBlock();
+                    }
+                    if ((b.getLocation().add(-1, 0, 0).getBlock().getType() == Material.DISPENSER)) {
+                        dispenser = b.getLocation().add(-1, 0, 0).getBlock();
+                    }
+                    if ((b.getLocation().add(0, 0, -1).getBlock().getType() == Material.DISPENSER)) {
+                        dispenser = b.getLocation().add(0, 0, -1).getBlock();
+                    }
+                    if ((b.getLocation().add(0, 0, +1).getBlock().getType() == Material.DISPENSER)) {
+                        dispenser = b.getLocation().add(0, 0, +1).getBlock();
+                    }
+                    if ((b.getLocation().add(0, +1, 0).getBlock().getType() == Material.DISPENSER)) {
+                        dispenser = b.getLocation().add(0, +1, 0).getBlock();
+                    }
                     if (dispenser == null) {
                         return;
                     }
                     if (new CheckBlocks(dispenser).isCrafter()) {
                         Crafter c = new Crafter(dispenser.getLocation()).getAllData();
                         DataCache.removeCrafter(c.dispenser.getLocation());
-                        if(new CrafterFile().contains(c)) {
+                        if (new CrafterFile().contains(c)) {
                             new CrafterFile().delete(c);
                             Player p = Bukkit.getPlayer(c.getOwnerUUID());
                             if (p != null && p.isOnline()) {
@@ -318,23 +358,33 @@ public class CrafterListener implements Listener {
                     }
                     return;
                 }
-                if(b.getType() == Material.HOPPER){
+                if (b.getType() == Material.HOPPER) {
                     if (b.getLocation().add(0, +1, 0).getBlock().getType() != Material.CRAFTING_TABLE) {
                         return;
                     }
                     Block dispenser = null;
-                    if ((b.getLocation().add(+1, +1, 0).getBlock().getType() == Material.DISPENSER)) {dispenser = b.getLocation().add(+1, +1, 0).getBlock();}
-                    if ((b.getLocation().add(-1, +1, 0).getBlock().getType() == Material.DISPENSER)){dispenser = b.getLocation().add(-1, +1, 0).getBlock();}
-                    if ((b.getLocation().add(0, +1, -1).getBlock().getType() == Material.DISPENSER)){dispenser = b.getLocation().add(0, +1, -1).getBlock();}
-                    if ((b.getLocation().add(0, +1, +1).getBlock().getType() == Material.DISPENSER)) {dispenser = b.getLocation().add(0, +1, +1).getBlock();}
-                    if ((b.getLocation().add(0, +2, 0).getBlock().getType() == Material.DISPENSER)) {dispenser = b.getLocation().add(0, +2, 0).getBlock();}
+                    if ((b.getLocation().add(+1, +1, 0).getBlock().getType() == Material.DISPENSER)) {
+                        dispenser = b.getLocation().add(+1, +1, 0).getBlock();
+                    }
+                    if ((b.getLocation().add(-1, +1, 0).getBlock().getType() == Material.DISPENSER)) {
+                        dispenser = b.getLocation().add(-1, +1, 0).getBlock();
+                    }
+                    if ((b.getLocation().add(0, +1, -1).getBlock().getType() == Material.DISPENSER)) {
+                        dispenser = b.getLocation().add(0, +1, -1).getBlock();
+                    }
+                    if ((b.getLocation().add(0, +1, +1).getBlock().getType() == Material.DISPENSER)) {
+                        dispenser = b.getLocation().add(0, +1, +1).getBlock();
+                    }
+                    if ((b.getLocation().add(0, +2, 0).getBlock().getType() == Material.DISPENSER)) {
+                        dispenser = b.getLocation().add(0, +2, 0).getBlock();
+                    }
                     if (dispenser == null) {
                         return;
                     }
                     if (new CheckBlocks(dispenser).isCrafter()) {
                         Crafter c = new Crafter(dispenser.getLocation()).getAllData();
                         DataCache.removeCrafter(c.dispenser.getLocation());
-                        if(new CrafterFile().contains(c)) {
+                        if (new CrafterFile().contains(c)) {
                             new CrafterFile().delete(c);
                             Player p = Bukkit.getPlayer(c.getOwnerUUID());
                             if (p != null && p.isOnline()) {
@@ -348,8 +398,8 @@ public class CrafterListener implements Listener {
     }
 
     @EventHandler
-    public void onPushEvent(BlockPistonExtendEvent e){
-        if(!e.getBlocks().isEmpty()) {
+    public void onPushEvent(BlockPistonExtendEvent e) {
+        if (!e.getBlocks().isEmpty()) {
             for (Block b : e.getBlocks()) {
                 if (b.getType() == Material.DISPENSER) {
                     if (new CheckBlocks(b).isCrafter()) {
@@ -362,11 +412,21 @@ public class CrafterListener implements Listener {
                         return;
                     }
                     Block dispenser = null;
-                    if ((b.getLocation().add(+1, 0, 0).getBlock().getType() == Material.DISPENSER)) {dispenser = b.getLocation().add(+1, 0, 0).getBlock();}
-                    if ((b.getLocation().add(-1, 0, 0).getBlock().getType() == Material.DISPENSER)){dispenser = b.getLocation().add(-1, 0, 0).getBlock();}
-                    if ((b.getLocation().add(0, 0, -1).getBlock().getType() == Material.DISPENSER)){dispenser = b.getLocation().add(0, 0, -1).getBlock();}
-                    if ((b.getLocation().add(0, 0, +1).getBlock().getType() == Material.DISPENSER)) {dispenser = b.getLocation().add(0, 0, +1).getBlock();}
-                    if ((b.getLocation().add(0, +1, 0).getBlock().getType() == Material.DISPENSER)) {dispenser = b.getLocation().add(0, +1, 0).getBlock();}
+                    if ((b.getLocation().add(+1, 0, 0).getBlock().getType() == Material.DISPENSER)) {
+                        dispenser = b.getLocation().add(+1, 0, 0).getBlock();
+                    }
+                    if ((b.getLocation().add(-1, 0, 0).getBlock().getType() == Material.DISPENSER)) {
+                        dispenser = b.getLocation().add(-1, 0, 0).getBlock();
+                    }
+                    if ((b.getLocation().add(0, 0, -1).getBlock().getType() == Material.DISPENSER)) {
+                        dispenser = b.getLocation().add(0, 0, -1).getBlock();
+                    }
+                    if ((b.getLocation().add(0, 0, +1).getBlock().getType() == Material.DISPENSER)) {
+                        dispenser = b.getLocation().add(0, 0, +1).getBlock();
+                    }
+                    if ((b.getLocation().add(0, +1, 0).getBlock().getType() == Material.DISPENSER)) {
+                        dispenser = b.getLocation().add(0, +1, 0).getBlock();
+                    }
                     if (dispenser == null) {
                         return;
                     }
@@ -375,16 +435,26 @@ public class CrafterListener implements Listener {
                     }
                     return;
                 }
-                if(b.getType() == Material.HOPPER){
+                if (b.getType() == Material.HOPPER) {
                     if (b.getLocation().add(0, +1, 0).getBlock().getType() != Material.CRAFTING_TABLE) {
                         return;
                     }
                     Block dispenser = null;
-                    if ((b.getLocation().add(+1, +1, 0).getBlock().getType() == Material.DISPENSER)) {dispenser = b.getLocation().add(+1, +1, 0).getBlock();}
-                    if ((b.getLocation().add(-1, +1, 0).getBlock().getType() == Material.DISPENSER)){dispenser = b.getLocation().add(-1, +1, 0).getBlock();}
-                    if ((b.getLocation().add(0, +1, -1).getBlock().getType() == Material.DISPENSER)){dispenser = b.getLocation().add(0, +1, -1).getBlock();}
-                    if ((b.getLocation().add(0, +1, +1).getBlock().getType() == Material.DISPENSER)) {dispenser = b.getLocation().add(0, +1, +1).getBlock();}
-                    if ((b.getLocation().add(0, +2, 0).getBlock().getType() == Material.DISPENSER)) {dispenser = b.getLocation().add(0, +2, 0).getBlock();}
+                    if ((b.getLocation().add(+1, +1, 0).getBlock().getType() == Material.DISPENSER)) {
+                        dispenser = b.getLocation().add(+1, +1, 0).getBlock();
+                    }
+                    if ((b.getLocation().add(-1, +1, 0).getBlock().getType() == Material.DISPENSER)) {
+                        dispenser = b.getLocation().add(-1, +1, 0).getBlock();
+                    }
+                    if ((b.getLocation().add(0, +1, -1).getBlock().getType() == Material.DISPENSER)) {
+                        dispenser = b.getLocation().add(0, +1, -1).getBlock();
+                    }
+                    if ((b.getLocation().add(0, +1, +1).getBlock().getType() == Material.DISPENSER)) {
+                        dispenser = b.getLocation().add(0, +1, +1).getBlock();
+                    }
+                    if ((b.getLocation().add(0, +2, 0).getBlock().getType() == Material.DISPENSER)) {
+                        dispenser = b.getLocation().add(0, +2, 0).getBlock();
+                    }
                     if (dispenser == null) {
                         return;
                     }
@@ -397,8 +467,8 @@ public class CrafterListener implements Listener {
     }
 
     @EventHandler
-    public void onRetrieveEvent(BlockPistonRetractEvent e){
-        if(!e.getBlocks().isEmpty()) {
+    public void onRetrieveEvent(BlockPistonRetractEvent e) {
+        if (!e.getBlocks().isEmpty()) {
             for (Block b : e.getBlocks()) {
                 if (b.getType() == Material.DISPENSER) {
                     if (new CheckBlocks(b).isCrafter()) {
@@ -411,11 +481,21 @@ public class CrafterListener implements Listener {
                         return;
                     }
                     Block dispenser = null;
-                    if ((b.getLocation().add(+1, 0, 0).getBlock().getType() == Material.DISPENSER)) {dispenser = b.getLocation().add(+1, 0, 0).getBlock();}
-                    if ((b.getLocation().add(-1, 0, 0).getBlock().getType() == Material.DISPENSER)){dispenser = b.getLocation().add(-1, 0, 0).getBlock();}
-                    if ((b.getLocation().add(0, 0, -1).getBlock().getType() == Material.DISPENSER)){dispenser = b.getLocation().add(0, 0, -1).getBlock();}
-                    if ((b.getLocation().add(0, 0, +1).getBlock().getType() == Material.DISPENSER)) {dispenser = b.getLocation().add(0, 0, +1).getBlock();}
-                    if ((b.getLocation().add(0, +1, 0).getBlock().getType() == Material.DISPENSER)) {dispenser = b.getLocation().add(0, +1, 0).getBlock();}
+                    if ((b.getLocation().add(+1, 0, 0).getBlock().getType() == Material.DISPENSER)) {
+                        dispenser = b.getLocation().add(+1, 0, 0).getBlock();
+                    }
+                    if ((b.getLocation().add(-1, 0, 0).getBlock().getType() == Material.DISPENSER)) {
+                        dispenser = b.getLocation().add(-1, 0, 0).getBlock();
+                    }
+                    if ((b.getLocation().add(0, 0, -1).getBlock().getType() == Material.DISPENSER)) {
+                        dispenser = b.getLocation().add(0, 0, -1).getBlock();
+                    }
+                    if ((b.getLocation().add(0, 0, +1).getBlock().getType() == Material.DISPENSER)) {
+                        dispenser = b.getLocation().add(0, 0, +1).getBlock();
+                    }
+                    if ((b.getLocation().add(0, +1, 0).getBlock().getType() == Material.DISPENSER)) {
+                        dispenser = b.getLocation().add(0, +1, 0).getBlock();
+                    }
                     if (dispenser == null) {
                         return;
                     }
@@ -424,16 +504,26 @@ public class CrafterListener implements Listener {
                     }
                     return;
                 }
-                if(b.getType() == Material.HOPPER){
+                if (b.getType() == Material.HOPPER) {
                     if (b.getLocation().add(0, +1, 0).getBlock().getType() != Material.CRAFTING_TABLE) {
                         return;
                     }
                     Block dispenser = null;
-                    if ((b.getLocation().add(+1, +1, 0).getBlock().getType() == Material.DISPENSER)) {dispenser = b.getLocation().add(+1, +1, 0).getBlock();}
-                    if ((b.getLocation().add(-1, +1, 0).getBlock().getType() == Material.DISPENSER)){dispenser = b.getLocation().add(-1, +1, 0).getBlock();}
-                    if ((b.getLocation().add(0, +1, -1).getBlock().getType() == Material.DISPENSER)){dispenser = b.getLocation().add(0, +1, -1).getBlock();}
-                    if ((b.getLocation().add(0, +1, +1).getBlock().getType() == Material.DISPENSER)) {dispenser = b.getLocation().add(0, +1, +1).getBlock();}
-                    if ((b.getLocation().add(0, +2, 0).getBlock().getType() == Material.DISPENSER)) {dispenser = b.getLocation().add(0, +2, 0).getBlock();}
+                    if ((b.getLocation().add(+1, +1, 0).getBlock().getType() == Material.DISPENSER)) {
+                        dispenser = b.getLocation().add(+1, +1, 0).getBlock();
+                    }
+                    if ((b.getLocation().add(-1, +1, 0).getBlock().getType() == Material.DISPENSER)) {
+                        dispenser = b.getLocation().add(-1, +1, 0).getBlock();
+                    }
+                    if ((b.getLocation().add(0, +1, -1).getBlock().getType() == Material.DISPENSER)) {
+                        dispenser = b.getLocation().add(0, +1, -1).getBlock();
+                    }
+                    if ((b.getLocation().add(0, +1, +1).getBlock().getType() == Material.DISPENSER)) {
+                        dispenser = b.getLocation().add(0, +1, +1).getBlock();
+                    }
+                    if ((b.getLocation().add(0, +2, 0).getBlock().getType() == Material.DISPENSER)) {
+                        dispenser = b.getLocation().add(0, +2, 0).getBlock();
+                    }
                     if (dispenser == null) {
                         return;
                     }
@@ -451,7 +541,7 @@ public class CrafterListener implements Listener {
             Block piston = e.getBlock();
             if (new CheckBlocks(piston).isBreaker()) {
                 Breaker b = new Breaker(piston.getLocation()).getBreaker();
-                if (b.endRod == null || b.endRod.getType() != Material.END_ROD || !AutoMain.placer) {
+                if (b.endRod == null || b.endRod.getType() != Material.END_ROD || !AutoMain.breaker) {
                     return;
                 }
                 Block breakBlock = b.breakLoc.getBlock();
@@ -495,14 +585,15 @@ public class CrafterListener implements Listener {
                 return;
             }
 
-            ((Chest)receiverLoc.getBlock().getState()).getBlockInventory().addItem(item);
+            ((Chest) receiverLoc.getBlock().getState()).getBlockInventory().addItem(item);
             receiverLoc.getBlock().getState().update();
-            ((Chest)receiverLoc.getBlock().getState()).getBlockInventory().getViewers().forEach(player -> {
+            ((Chest) receiverLoc.getBlock().getState()).getBlockInventory().getViewers().forEach(player -> {
                 if (player instanceof Player) {
                     try {
                         //noinspection UnstableApiUsage
-                        ((Player)player).updateInventory();
-                    } catch (Exception ignored) {}
+                        ((Player) player).updateInventory();
+                    } catch (Exception ignored) {
+                    }
                 }
             });
 
@@ -539,14 +630,15 @@ public class CrafterListener implements Listener {
                 return;
             }
 
-            ((Chest)receiverLoc.getBlock().getState()).getBlockInventory().addItem(item);
+            ((Chest) receiverLoc.getBlock().getState()).getBlockInventory().addItem(item);
             receiverLoc.getBlock().getState().update();
-            ((Chest)receiverLoc.getBlock().getState()).getBlockInventory().getViewers().forEach(player -> {
+            ((Chest) receiverLoc.getBlock().getState()).getBlockInventory().getViewers().forEach(player -> {
                 if (player instanceof Player) {
                     try {
                         //noinspection UnstableApiUsage
-                        ((Player)player).updateInventory();
-                    } catch (Exception ignored) {}
+                        ((Player) player).updateInventory();
+                    } catch (Exception ignored) {
+                    }
                 }
             });
 

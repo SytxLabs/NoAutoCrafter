@@ -12,9 +12,11 @@ import java.util.Objects;
 
 public class Transporter {
 
-    public FileManager file;
+    public final FileManager file;
 
-    public Transporter() { this.file = new FileManager("data", "transporter");}
+    public Transporter() {
+        this.file = new FileManager("data", "transporter");
+    }
 
     public boolean addReceiver(Player p, Block receiver, Material material) {
         if (receiver == null) {
@@ -43,9 +45,13 @@ public class Transporter {
             if (file.read("Receiver." + key + ".OwnerUUID").equalsIgnoreCase(p.getUniqueId().toString())) {
                 String[] locations = key.split(",");
                 Location loc = new Location(Bukkit.getWorld(locations[0]), Integer.parseInt(locations[1]), Integer.parseInt(locations[2]), Integer.parseInt(locations[3]));
-                if (loc.getWorld() == null) {continue;}
+                if (loc.getWorld() == null) {
+                    continue;
+                }
                 Block block = loc.getBlock();
-                if (block.getType() == Material.AIR) {continue;}
+                if (block.getType() == Material.AIR) {
+                    continue;
+                }
                 receivers.put(Material.valueOf(file.read("Receiver." + key + ".Material")), block);
             }
         }

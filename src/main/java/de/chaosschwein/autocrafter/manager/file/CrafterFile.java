@@ -59,7 +59,7 @@ public class CrafterFile {
         file.write("Crafter." + locstring, null);
     }
 
-    public boolean contains(Crafter crafter){
+    public boolean contains(Crafter crafter) {
         Location loc = crafter.dispenser.getLocation();
         if (loc.getWorld() == null) {
             return false;
@@ -71,13 +71,19 @@ public class CrafterFile {
         DataCache.crafter.clear();
         if (file.getConfig().getConfigurationSection("Crafter") != null) {
             ConfigurationSection o = file.getConfig().getConfigurationSection("Crafter");
-            if (o == null) {return;}
+            if (o == null) {
+                return;
+            }
             for (String key : o.getKeys(false)) {
                 String[] locString = key.split(",");
                 Location loc = new Location(Bukkit.getWorld(locString[0]), Integer.parseInt(locString[1]), Integer.parseInt(locString[2]), Integer.parseInt(locString[3]));
-                if (loc.getWorld() == null) {continue;}
+                if (loc.getWorld() == null) {
+                    continue;
+                }
                 Crafter crafter = new Crafter(loc).getAllData();
-                if (crafter.dispenser == null) {continue;}
+                if (crafter.dispenser == null) {
+                    continue;
+                }
                 DataCache.crafter.put(loc, crafter);
             }
         }

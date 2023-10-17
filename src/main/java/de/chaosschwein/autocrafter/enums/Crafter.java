@@ -69,7 +69,7 @@ public class Crafter {
 
     public String getOwnerUUID() {
         if (this.ownerUUID.isEmpty()) {
-            if(new CrafterFile().contains(this)) {
+            if (new CrafterFile().contains(this)) {
                 this.ownerUUID = new CrafterFile().getOwnerUUID(this);
             }
         }
