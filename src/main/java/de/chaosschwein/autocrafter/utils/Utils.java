@@ -8,15 +8,15 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.BlockIterator;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
+@SuppressWarnings("unused")
 public class Utils {
 
     public static Block getTargetBlock(Player player, int range) {
-        BlockIterator iter = new BlockIterator(player, range);
-        Block lastBlock = iter.next();
-        while (iter.hasNext()) {
-            lastBlock = iter.next();
+        BlockIterator blockIterator = new BlockIterator(player, range);
+        Block lastBlock = blockIterator.next();
+        while (blockIterator.hasNext()) {
+            lastBlock = blockIterator.next();
             if (lastBlock.getType() == Material.AIR) {
                 continue;
             }
@@ -26,44 +26,129 @@ public class Utils {
     }
 
     public static ArrayList<ItemStack> getItemsInBlock(Block b) {
-        ArrayList<ItemStack> istack = new ArrayList<>();
-        Inventory inv = null;
-        switch (b.getType()) {
-            case DISPENSER:
-                inv = ((Dispenser) b.getState()).getInventory();
-                break;
-            case CHEST:
-                inv = ((Chest) b.getState()).getInventory();
-                break;
-            case FURNACE:
-                inv = ((Furnace) b.getState()).getInventory();
-                break;
-            case BLAST_FURNACE:
-                inv = ((BlastFurnace) b.getState()).getInventory();
-                break;
-            case SMOKER:
-                inv = ((Smoker) b.getState()).getInventory();
-                break;
-            case BREWING_STAND:
-                inv = ((BrewingStand) b.getState()).getInventory();
-                break;
-            case HOPPER:
-                inv = ((Hopper) b.getState()).getInventory();
-                break;
-            case DROPPER:
-                inv = ((Dropper) b.getState()).getInventory();
-                break;
-        }
+        ArrayList<ItemStack> iStack = new ArrayList<>();
+        Inventory inv = getBlockInventory(b);
         if(inv == null) {
-            return istack;
+            return iStack;
         }
         for (int i = 0; i < inv.getSize(); i++) {
             ItemStack is = inv.getItem(i);
             if (is != null && is.getType() != Material.AIR) {
-                istack.add(inv.getItem(i));
-
+                iStack.add(inv.getItem(i));
             }
         }
-        return istack;
+        return iStack;
+    }
+
+    public static Inventory getBlockInventory(Block b) {
+        return switch (b.getType()) {
+            case DISPENSER -> ((Dispenser) b.getState()).getInventory();
+            case CHEST -> ((Chest) b.getState()).getInventory();
+            case FURNACE -> ((Furnace) b.getState()).getInventory();
+            case BLAST_FURNACE -> ((BlastFurnace) b.getState()).getInventory();
+            case SMOKER -> ((Smoker) b.getState()).getInventory();
+            case BREWING_STAND -> ((BrewingStand) b.getState()).getInventory();
+            case HOPPER -> ((Hopper) b.getState()).getInventory();
+            case DROPPER -> ((Dropper) b.getState()).getInventory();
+            default -> null;
+        };
+    }
+
+    public static void removeItem(Inventory inventory, Material material, int amount) {
+        if (inventory == null) {
+            return;
+        }
+        for (ItemStack itemStack : inventory.getContents()) {
+            if (itemStack == null || itemStack.getType() != material) {
+                continue;
+            }
+            int newAmount = itemStack.getAmount() - amount;
+            amount -= itemStack.getAmount();
+            if(newAmount <= 0) {
+                inventory.remove(itemStack);
+            } else {
+                itemStack.setAmount(newAmount);
+            }
+            if(amount <= 0) {
+                break;
+            }
+        }
+        inventory.getViewers().forEach(player -> {
+            try {
+                //noinspection UnstableApiUsage
+                ((Player) player).updateInventory();
+            } catch (Exception ignored) {}
+        });
+    }
+
+    public static void removeItem(Dispenser dispenser, Material material, int amount) {
+        if (dispenser == null) {
+            return;
+        }
+        for (int i = 0; i < dispenser.getSnapshotInventory().getSize(); i++) {
+            ItemStack itemStack = dispenser.getSnapshotInventory().getItem(i);
+            if (itemStack == null || itemStack.getType() != material) {
+                continue;
+            }
+            int newAmount = itemStack.getAmount() - amount;
+            amount -= itemStack.getAmount();
+            itemStack.setAmount(newAmount);
+            dispenser.getSnapshotInventory().setItem(i, itemStack.getAmount() <= 0 ? null : itemStack);
+            dispenser.update();
+            if(amount <= 0) {
+                break;
+            }
+        }
+        dispenser.getInventory().getViewers().forEach(player -> {
+            try {
+                //noinspection UnstableApiUsage
+                ((Player) player).updateInventory();
+            } catch (Exception ignored) {}
+        });
+    }
+
+    public static void addItem(Inventory inventory, Material material, int amount) {
+        if (inventory == null) {
+            return;
+        }
+        inventory.addItem(new ItemStack(material, amount));
+        inventory.getViewers().forEach(player -> {
+            try {
+                //noinspection UnstableApiUsage
+                ((Player) player).updateInventory();
+            } catch (Exception ignored) {}
+        });
+    }
+
+    public static boolean hasNotEnoughPlace(Inventory inventory, Material material, int amount){
+        int freeSlots = 0;
+        for (ItemStack itemStack : inventory.getContents()) {
+            if (itemStack == null) {
+                freeSlots++;
+                continue;
+            }
+            if (itemStack.getType() == material) {
+                int newAmount = itemStack.getAmount() + amount;
+                if(newAmount <= itemStack.getMaxStackSize()) {
+                    return false;
+                }
+            }
+        }
+        return freeSlots <= 0;
+    }
+
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    public static boolean hasPermission(Player player, String permission) {
+        return hasPermission(player, permission, true);
+    }
+
+    public static boolean hasPermission(Player player, String permission, boolean sendMessage) {
+        if(permission.equalsIgnoreCase("") || player.hasPermission(permission)) {
+            return true;
+        }
+        if(sendMessage) {
+            (new Message(player)).noPermission();
+        }
+        return false;
     }
 }

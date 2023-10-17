@@ -1,45 +1,65 @@
 package de.chaosschwein.autocrafter.main;
 
 import de.chaosschwein.autocrafter.cmd.AutoCommand;
+import de.chaosschwein.autocrafter.cmd.ReceiverCommand;
+import de.chaosschwein.autocrafter.cmd.SenderCommand;
 import de.chaosschwein.autocrafter.listener.InventoryListener;
-import de.chaosschwein.autocrafter.listener.dis;
+import de.chaosschwein.autocrafter.listener.CrafterListener;
 import de.chaosschwein.autocrafter.manager.FileManager;
-import de.chaosschwein.autocrafter.manager.file.CrafingRezeptFile;
 import de.chaosschwein.autocrafter.manager.file.CrafterFile;
+import de.chaosschwein.autocrafter.manager.file.Language;
+import de.chaosschwein.autocrafter.manager.file.Permission;
 import de.chaosschwein.autocrafter.utils.Message;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
-import java.util.HashMap;
+
+import java.util.*;
 
 public final class AutoMain extends JavaPlugin {
 
     public static FileManager config;
+    public static Language language = new Language();
+    public static Permission permission = new Permission();
     public static String prefix = "&8[&aAutoCrafter§8] &7";
     public static boolean crafter = true;
+    public static boolean breaker = true;
+    public static boolean placer = true;
+    public static boolean transport = true;
 
-    public static AutoMain instand;
+    public static AutoMain instance;
     @Override
     public void onEnable() {
-        instand = this;
+        instance = this;
         config = new FileManager("config");
         config.writeDefault(new HashMap<String,Object>(){{
             put("prefix", "&8[&aAutoCrafter§8] &7");
             put("crafter", true);
             put("breaker", true);
+            put("placer", true);
+            put("transport", true);
         }});
         prefix = config.read("prefix");
         crafter = (boolean)config.read("crafter", true);
+        breaker = (boolean)config.read("breaker", true);
+        placer = (boolean)config.read("placer", true);
+        transport = (boolean)config.read("transport", true);
 
-        Bukkit.getPluginManager().registerEvents(new dis(), this);
+        Bukkit.getPluginManager().registerEvents(new CrafterListener(), this);
         Bukkit.getPluginManager().registerEvents(new InventoryListener(),this);
 
-        new CrafingRezeptFile().init();
         new CrafterFile().cache();
-        getCommand("autocrafter").setExecutor(new AutoCommand());
-        if(Bukkit.getPluginManager().isPluginEnabled(instand)) {
+        Objects.requireNonNull(getCommand("autocrafter")).setExecutor(new AutoCommand());
+        Objects.requireNonNull(getCommand("ac")).setExecutor(new AutoCommand());
+        Objects.requireNonNull(getCommand("receiver")).setExecutor(new ReceiverCommand());
+        Objects.requireNonNull(getCommand("rc")).setExecutor(new ReceiverCommand());
+        Objects.requireNonNull(getCommand("sender")).setExecutor(new SenderCommand());
+        Objects.requireNonNull(getCommand("sc")).setExecutor(new SenderCommand());
+
+
+        if(Bukkit.getPluginManager().isPluginEnabled(instance)) {
             Bukkit.getConsoleSender().sendMessage(prefix+"§a--------------------------");
             Bukkit.getConsoleSender().sendMessage(prefix+"§a");
-            Bukkit.getConsoleSender().sendMessage(prefix+"§aAutoCraft wurde aktiviert");
+            Bukkit.getConsoleSender().sendMessage(prefix+"§aAutoCraft enabled!");
             Bukkit.getConsoleSender().sendMessage(prefix+"§a");
             Bukkit.getConsoleSender().sendMessage(prefix+"§a--------------------------");
         }
@@ -48,12 +68,18 @@ public final class AutoMain extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+        if(Bukkit.getPluginManager().isPluginEnabled(instance)) {
+            Bukkit.getConsoleSender().sendMessage(prefix+"§c--------------------------");
+            Bukkit.getConsoleSender().sendMessage(prefix+"§c");
+            Bukkit.getConsoleSender().sendMessage(prefix+"§cAutoCraft disabled!");
+            Bukkit.getConsoleSender().sendMessage(prefix+"§c");
+            Bukkit.getConsoleSender().sendMessage(prefix+"§c--------------------------");
+        }
     }
 
     public static void reload(){
-        new Message().send("§aAutoCrafter wird neugeladen!");
-        Bukkit.getPluginManager().disablePlugin(instand);
-        Bukkit.getPluginManager().enablePlugin(instand);
+        new Message().send("§aAutoCrafter reloading!");
+        Bukkit.getPluginManager().disablePlugin(instance);
+        Bukkit.getPluginManager().enablePlugin(instance);
     }
 }

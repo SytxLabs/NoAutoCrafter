@@ -1,6 +1,5 @@
 package de.chaosschwein.autocrafter.enums;
 
-import de.chaosschwein.autocrafter.enums.data.CrafingRezept;
 import de.chaosschwein.autocrafter.manager.file.CrafterFile;
 import de.chaosschwein.autocrafter.utils.CheckBlocks;
 import org.bukkit.Location;
@@ -15,10 +14,8 @@ public class Crafter {
     public Block hopper = null;
     public Block dispenser = null;
     public boolean isCrafter = false;
-    public CrafingRezept rezept = null;
+    public CraftingRezept rezept = null;
     public String ownerUUID = "";
-    public String ownerName = "";
-    public long createtAT = 0;
 
     public Crafter(Location dispenser) {
         if (dispenser.getBlock().getType() != Material.AIR && dispenser.getBlock().getType() == Material.DISPENSER) {
@@ -63,7 +60,7 @@ public class Crafter {
         return this;
     }
 
-    public CrafingRezept getRezept() {
+    public CraftingRezept getRezept() {
         if (this.rezept == null) {
             this.rezept = new CrafterFile().getRezept(this);
         }
@@ -71,7 +68,7 @@ public class Crafter {
     }
 
     public String getOwnerUUID() {
-        if (this.ownerUUID.equals("")) {
+        if (this.ownerUUID.isEmpty()) {
             if(new CrafterFile().contains(this)) {
                 this.ownerUUID = new CrafterFile().getOwnerUUID(this);
             }
@@ -79,30 +76,14 @@ public class Crafter {
         return this.ownerUUID;
     }
 
-    public String getOwnerName() {
-        if (this.ownerName.equals("")) {
-            if(new CrafterFile().contains(this)) {
-                this.ownerName = new CrafterFile().getOwnerName(this);
-            }
-        }
-        return this.ownerName;
-    }
-
-    public long getCreatetAT() {
-        if (this.createtAT == 0) {
-            if(new CrafterFile().contains(this)) {
-                this.createtAT = new CrafterFile().getCreatetAT(this);
-            }
-        }
-        return this.createtAT;
+    public boolean isRegistered() {
+        return new CrafterFile().contains(this);
     }
 
     public Crafter getAllData() {
         this.getCrafter();
         this.getRezept();
         this.getOwnerUUID();
-        this.getOwnerName();
-        this.getCreatetAT();
         return this;
     }
 }

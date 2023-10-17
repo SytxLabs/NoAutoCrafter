@@ -15,6 +15,7 @@ public class FileManager {
     public String dir = "plugins/AutoCrafter/";
     public String filename = "config.yml";
 
+    @SuppressWarnings("unused")
     public FileManager(){}
 
     public FileManager(String filename) {
@@ -37,8 +38,8 @@ public class FileManager {
     public void saveConfig(FileConfiguration config) {
         try {
             config.save(getFile());
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ignored) {
+            System.out.println("§c[AutoCrafter] Error while saving config file: "+filename);
         }
     }
 
@@ -49,8 +50,8 @@ public class FileManager {
         return getConfig().getString(key);
     }
 
-    public Object read(String key, boolean objekt){
-        if (objekt) {
+    public Object read(String key, boolean object){
+        if (object) {
             return getConfig().get(key);
         }
         if(getConfig().get(key) instanceof String){
@@ -65,11 +66,11 @@ public class FileManager {
         saveConfig(cfg);
     }
 
-    public void writeDefault(HashMap<String,Object> dset){
+    public void writeDefault(HashMap<String,Object> defaultSet){
         FileConfiguration cfg = getConfig();
         cfg.options().copyDefaults(true);
-        for(String key : dset.keySet()){
-            cfg.addDefault(key,dset.get(key));
+        for(String key : defaultSet.keySet()){
+            cfg.addDefault(key,defaultSet.get(key));
         }
         saveConfig(cfg);
     }

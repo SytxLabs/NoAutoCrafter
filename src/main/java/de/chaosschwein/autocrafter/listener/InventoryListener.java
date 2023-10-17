@@ -1,74 +1,126 @@
 package de.chaosschwein.autocrafter.listener;
 
-import de.chaosschwein.autocrafter.cmd.AutoCommand;
-import de.chaosschwein.autocrafter.enums.data.CrafingRezept;
-import de.chaosschwein.autocrafter.manager.file.CrafterFile;
+import de.chaosschwein.autocrafter.cmd.*;
+import de.chaosschwein.autocrafter.enums.CraftingRezept;
+import de.chaosschwein.autocrafter.main.AutoMain;
+import de.chaosschwein.autocrafter.manager.file.*;
 import de.chaosschwein.autocrafter.utils.Message;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.HashMap;
+
+@SuppressWarnings("UnstableApiUsage")
 public class InventoryListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
-        if(e.getWhoClicked() instanceof Player) {
-            Player p = (Player) e.getWhoClicked();
+        if(e.getWhoClicked() instanceof Player p) {
             String title = e.getView().getTitle();
             ItemStack item = e.getCurrentItem();
-            if(item == null || item.getType() == Material.AIR || title.equals("") || !item.hasItemMeta() ||item.getItemMeta() == null) {return;}
-            String itemname = item.getItemMeta().getDisplayName();
             Message msg = new Message(p);
-            if ("§d§lAutoCrafter".equals(title)) {
-                if (itemname.equalsIgnoreCase("§e")) {
+            if ("§d§lAutoCrafter".equals(title) && item != null && item.getType() != Material.AIR && e.getClickedInventory() == p.getOpenInventory().getTopInventory() && e.getSlot() == 0) {
+                ItemStack[] items = new ItemStack[9];
+                for (int i = 0; i < 9; i++) {
+                    ItemStack iStack = e.getInventory().getItem(i + 1);
+                    if (iStack == null || iStack.getType() == Material.AIR) {
+                        items[i] = null;
+                        continue;
+                    }
+                    items[i] = new ItemStack(iStack.getType(), iStack.getAmount());
+                }
+                CraftingRezept rezept = new CraftingRezept(items, new HashMap<>() {{ put(item.getType(), item.getAmount()); }});
+                CrafterFile crafterFile = new CrafterFile();
+                crafterFile.save(p, AutoCommand.crafter.get(p), rezept);
+
+                msg.send(AutoMain.language.CrafterCreated);
+                p.closeInventory();
+                return;
+            }
+            if(item == null || item.getType() == Material.AIR || title.isEmpty() || !item.hasItemMeta() ||item.getItemMeta() == null) {return;}
+            String itemName = item.getItemMeta().getDisplayName();
+            if ("§d§lReceiver".equals(title) || "§d§lSender".equals(title)) {
+                if (itemName.equalsIgnoreCase("§e")) {
                     e.setCancelled(true);
                 }
-                if (itemname.equals("§cZurück")) {
+                if (itemName.equals("§cZurück")) {
                     e.setCancelled(true);
                     p.closeInventory();
                 }
-                if (itemname.equalsIgnoreCase("§dItem Reinlegen")) {
+                if (itemName.equalsIgnoreCase("§dItem Reinlegen")) {
                     e.setCancelled(true);
-                    msg.send("§7Bitte legen Sie das Item, in den Slot oben in der mitte!");
+                    msg.send(AutoMain.language.CrafterInsertItem);
                 }
-                if (itemname.equals("§aAutoCrafter Erstellen")) {
+                if (itemName.equals("§aAutoCrafter Erstellen")) {
                     e.setCancelled(true);
-                    CrafingRezept cr = null;
+                }
+                if (itemName.equals("§aReceiver Erstellen")) {
+                    e.setCancelled(true);
+                    Material mat;
                     ItemStack item1 = e.getInventory().getItem(4);
                     ItemStack item2 = e.getInventory().getItem(22);
                     if ((item1 != null && item1.getType() != Material.AIR)) {
-                        cr = CrafingRezept.getRezept(item1.getType());
+                        mat = item1.getType();
                         p.getInventory().addItem(item1);
                         p.updateInventory();
-                    } else if ((item2 != null && item2.getType() != Material.BOOK)) {
-                        cr = CrafingRezept.getRezept(item2.getType());
+                    } else if(item2 != null && item2.getType() != Material.AIR) {
+                        mat = item2.getType();
                         p.getInventory().addItem(item2);
                         p.updateInventory();
                     } else {
                         p.closeInventory();
-                        msg.send("§7Du musst ein Item reinlegen!");
+                        msg.send(AutoMain.language.CrafterInsertItemError);
                         return;
                     }
-                    if (cr == null) {
+                    if (new Transporter().containsReceiver(mat, p.getUniqueId().toString())) {
                         p.closeInventory();
-                        msg.send("§7Es gibt kein Rezept für dieses Item!");
+                        msg.send(AutoMain.language.ReceiverMaterialAlreadyExists);
                         return;
                     }
-                    if (!AutoCommand.crafter.containsKey(p)) {
+                    if (!ReceiverCommand.receiver.containsKey(p)) {
                         p.closeInventory();
-                        msg.send("§7Du musst einen Crafter auswählen!");
                         return;
                     }
-                    if (new CrafterFile().save(p, AutoCommand.crafter.get(p).getCrafter(), cr)) {
+                    if (new Transporter().addReceiver(p, ReceiverCommand.receiver.get(p), mat)) {
                         p.closeInventory();
-                        msg.send("§7Crafter erstellt!");
+                        msg.send(AutoMain.language.ReceiverCreated);
                     } else {
                         p.closeInventory();
-                        msg.send("§7Crafter konnte nicht erstellt werden!");
+                        msg.send(AutoMain.language.error);
+                    }
+                }
+                if (itemName.equals("§aSender Erstellen")) {
+                    e.setCancelled(true);
+                    Material mat;
+                    ItemStack item1 = e.getInventory().getItem(4);
+                    ItemStack item2 = e.getInventory().getItem(22);
+                    if ((item1 != null && item1.getType() != Material.AIR)) {
+                        mat = item1.getType();
+                        p.getInventory().addItem(item1);
+                        p.updateInventory();
+                    } else if(item2 != null && item2.getType() != Material.AIR) {
+                        mat = item2.getType();
+                        p.getInventory().addItem(item2);
+                        p.updateInventory();
+                    } else {
+                        p.closeInventory();
+                        msg.send(AutoMain.language.CrafterInsertItemError);
+                        return;
+                    }
+                    if (!SenderCommand.sender.containsKey(p)) {
+                        p.closeInventory();
+                        return;
+                    }
+                    if (new Transporter().addSender(p, SenderCommand.sender.get(p), mat)) {
+                        p.closeInventory();
+                        msg.send(AutoMain.language.SenderCreated);
+                    } else {
+                        p.closeInventory();
+                        msg.send(AutoMain.language.error);
                     }
                 }
             }

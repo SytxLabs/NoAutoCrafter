@@ -1,13 +1,21 @@
 name: AutoCrafter
 version: '${project.version}'
 main: de.chaosschwein.autocrafter.main.AutoMain
-api-version: 1.19
-authors: [ ChaosSchwein ]
+api-version: '1.20'
+authors: [ ChaosSchwein, Erik05Master ]
 description: Minecraft AutoCrafter Plugin
-website: https://sytx.eu
+website: https://sytxlabs.eu
 
 commands:
   autocrafter:
     usage: /autocrafter
     description: AutoCrafter Command
     aliases: [ ac ]
+  receiver:
+    usage: /receiver
+    description: Receiver Command
+    aliases: [ rc ]
+  sender:
+    usage: /sender
+    description: Sender Command
+    aliases: [ sc ]

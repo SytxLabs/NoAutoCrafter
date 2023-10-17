@@ -10,6 +10,7 @@ import org.bukkit.inventory.meta.*;
 import java.util.ArrayList;
 import java.util.UUID;
 
+@SuppressWarnings("unused")
 public class ItemBuilder {
 
     private final ItemStack item;
@@ -29,6 +30,7 @@ public class ItemBuilder {
 
     public ItemBuilder(Material material, int amount, short damage) {
         this.material = material;
+        //noinspection deprecation
         this.item = new ItemStack(material, amount, damage);
         this.meta = item.getItemMeta();
     }
@@ -52,13 +54,13 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setItemflag(ItemFlag itemflag) {
+    public ItemBuilder setItemFlag(ItemFlag itemflag) {
         this.meta.addItemFlags(itemflag);
         this.item.setItemMeta(meta);
         return this;
     }
 
-    public ItemBuilder setItemflag(ItemFlag itemflag, boolean value) {
+    public ItemBuilder setItemFlag(ItemFlag itemflag, boolean value) {
         if(value) {
             this.meta.addItemFlags(itemflag);
         } else {
@@ -68,8 +70,8 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setItemflag(ArrayList<ItemFlag> itemflag) {
-        for(ItemFlag i : itemflag) {
+    public ItemBuilder setItemFlag(ArrayList<ItemFlag> itemFlag) {
+        for(ItemFlag i : itemFlag) {
             this.meta.addItemFlags(i);
         }
         this.item.setItemMeta(meta);

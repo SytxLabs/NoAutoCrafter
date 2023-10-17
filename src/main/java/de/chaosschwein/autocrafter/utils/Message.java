@@ -6,6 +6,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+@SuppressWarnings("unused")
 public class Message {
 
 
@@ -35,11 +36,7 @@ public class Message {
     }
 
     public void noPermission() {
-        send("&cYou don't have the permission to do this!");
-    }
-
-    public void playerNotFound() {
-        send("&cPlayer not found!");
+        send(AutoMain.language.noPermission);
     }
 
     public static void info(String message) {
