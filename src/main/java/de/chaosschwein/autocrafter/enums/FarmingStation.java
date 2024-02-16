@@ -76,9 +76,6 @@ public class FarmingStation {
     public boolean isFullyGrown() {
         Block block = this.blockToFarm;
         BlockData bData = block.getBlockData();
-        if (!(bData instanceof Ageable || bData instanceof Levelled || bData instanceof Hatchable || bData instanceof Sapling)) {
-            return false;
-        }
         if (block.getType() == Material.ACACIA_SAPLING || block.getType() == Material.BIRCH_SAPLING || block.getType() == Material.DARK_OAK_SAPLING || block.getType() == Material.JUNGLE_SAPLING || block.getType() == Material.OAK_SAPLING || block.getType() == Material.SPRUCE_SAPLING) {
             return false;
         }
@@ -86,19 +83,20 @@ public class FarmingStation {
             return false;
         }
         if (bData instanceof Ageable age) {
-            int progress = age.getAge() * 100 / age.getMaximumAge();
+            int progress = age.getMaximumAge() - age.getAge();
             Material material = block.getType();
-            if (material != Material.CACTUS && material != Material.SUGAR_CANE) {
+            if (material == Material.CACTUS || material == Material.SUGAR_CANE) {
                 return false;
             }
-            return progress == 0 && material == block.getRelative(BlockFace.DOWN).getType() && material == block.getRelative(BlockFace.DOWN, 2).getType();
+
+            return progress <= 0;
         } else if (bData instanceof Levelled levelled) {
-            int progress = levelled.getLevel() * 100 / levelled.getMaximumLevel();
-            return progress >= 99;
+            int progress = levelled.getMaximumLevel() - levelled.getLevel();
+            return progress <= 0;
 
         } else if (bData instanceof Hatchable hatchable) {
-            int progress = hatchable.getHatch() * 100 / hatchable.getMaximumHatch();
-            return progress >= 99;
+            int progress = hatchable.getMaximumHatch() - hatchable.getHatch();
+            return progress <= 0;
         }
         return false;
     }

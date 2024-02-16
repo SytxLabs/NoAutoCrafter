@@ -4,6 +4,7 @@ import de.chaosschwein.autocrafter.enums.*;
 import de.chaosschwein.autocrafter.main.AutoMain;
 import de.chaosschwein.autocrafter.utils.CheckBlocks;
 import de.chaosschwein.autocrafter.utils.Utils;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Dispenser;
@@ -32,7 +33,7 @@ public class FarmingStationListener implements Listener {
 
                     if (f.getBlockToFarm().getType() != Material.AIR) {
                         if (f.isFullyGrown()) {
-                            FarmType farmType = FarmType.getFromMaterial(f.getBlockToFarm().getType());
+                            FarmType farmType = getFarmType(f);
                             if (farmType == null) {
                                 return;
                             }
@@ -78,28 +79,61 @@ public class FarmingStationListener implements Listener {
                         return;
                     }
                     if (f.getBlockToFarm().getType() == Material.AIR) {
-                        if (type.material == Material.NETHER_WART) {
-                            if (f.getFarmLand().getType() == Material.SOUL_SAND) {
-                                f.getBlockToFarm().setType(type.material);
-                                f.getDispenser().getWorld().playSound(f.getDispenser().getLocation(), Sound.BLOCK_PISTON_EXTEND, 1, 1);
-                                if (item.getAmount() > 1) {
-                                    item.setAmount(item.getAmount() - 1);
-                                } else {
-                                    dispenser.getInventory().remove(item);
+                        FarmType finalType = type;
+                        ItemStack finalItem = item;
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(AutoMain.instance, () -> {
+                            if (finalType.material == Material.NETHER_WART) {
+                                if (f.getFarmLand().getType() == Material.SOUL_SAND) {
+                                    f.getBlockToFarm().setType(finalType.material);
+                                    f.getDispenser().getWorld().playSound(f.getDispenser().getLocation(), Sound.BLOCK_PISTON_EXTEND, 1, 1);
+                                    Utils.removeItem(dispenser, finalItem.getType(), 1);
+                                    dispenser.update();
                                 }
-                            }
-                        } else {
-                            f.getBlockToFarm().setType(type.material);
-                            f.getDispenser().getWorld().playSound(f.getDispenser().getLocation(), Sound.BLOCK_PISTON_EXTEND, 1, 1);
-                            if (item.getAmount() > 1) {
-                                item.setAmount(item.getAmount() - 1);
                             } else {
-                                dispenser.getInventory().remove(item);
+                                switch (finalType.material) {
+                                    case SWEET_BERRIES:
+                                        f.getBlockToFarm().setType(Material.SWEET_BERRY_BUSH);
+                                        break;
+                                    case WHEAT_SEEDS:
+                                        f.getBlockToFarm().setType(Material.WHEAT);
+                                        break;
+                                    case CARROT:
+                                        f.getBlockToFarm().setType(Material.CARROTS);
+                                        break;
+                                    case POTATO:
+                                        f.getBlockToFarm().setType(Material.POTATOES);
+                                        break;
+                                    case BEETROOT_SEEDS:
+                                        f.getBlockToFarm().setType(Material.BEETROOTS);
+                                        break;
+                                    default:
+                                        f.getBlockToFarm().setType(finalType.material);
+                                        break;
+                                }
+                                f.getDispenser().getWorld().playSound(f.getDispenser().getLocation(), Sound.BLOCK_PISTON_EXTEND, 1, 1);
+                                dispenser.update();
+                                Utils.removeItem(dispenser, finalItem.getType(), 1);
+                                dispenser.update();
                             }
-                        }
+                        }, 5);
                     }
                 }
             }
         }
+    }
+
+    private static FarmType getFarmType(FarmingStation f) {
+        FarmType farmType = FarmType.getFromMaterial(f.getBlockToFarm().getType());
+        if (farmType != null) {
+            return farmType;
+        }
+        return switch (f.getBlockToFarm().getType()) {
+            case SWEET_BERRY_BUSH -> FarmType.getFromMaterial(Material.SWEET_BERRIES);
+            case WHEAT -> FarmType.getFromMaterial(Material.WHEAT_SEEDS);
+            case CARROTS -> FarmType.getFromMaterial(Material.CARROT);
+            case POTATOES -> FarmType.getFromMaterial(Material.POTATO);
+            case BEETROOTS -> FarmType.getFromMaterial(Material.BEETROOT_SEEDS);
+            default -> null;
+        };
     }
 }

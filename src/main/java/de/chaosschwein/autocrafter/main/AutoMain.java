@@ -18,11 +18,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.HashMap;
 import java.util.Objects;
 
+import static de.chaosschwein.autocrafter.main.UpdateChecker.isVersionGreater;
+
 public final class AutoMain extends JavaPlugin {
 
-    public static final Language language = new Language();
-    public static final Permission permission = new Permission();
-    public static final FarmingTypes farmingTypes = new FarmingTypes();
+    public static Language language = new Language();
+    public static Permission permission = new Permission();
+    public static FarmingTypes farmingTypes = new FarmingTypes();
     public static FileManager config;
     public static String prefix = "&8[&aAutoCrafter§8] &7";
     public static boolean crafter = true;
@@ -37,6 +39,9 @@ public final class AutoMain extends JavaPlugin {
         new Message().send("§aAutoCrafter reloading!");
         Bukkit.getPluginManager().disablePlugin(instance);
         Bukkit.getPluginManager().enablePlugin(instance);
+        AutoMain.language = new Language();
+        AutoMain.permission = new Permission();
+        AutoMain.farmingTypes = new FarmingTypes();
     }
 
     @Override
@@ -79,6 +84,14 @@ public final class AutoMain extends JavaPlugin {
             Bukkit.getConsoleSender().sendMessage(prefix + "§a");
             Bukkit.getConsoleSender().sendMessage(prefix + "§a--------------------------");
         }
+
+        new UpdateChecker(this, 113127).getVersion(version -> {
+            if (isVersionGreater(version, this.getDescription().getVersion())) {
+                Bukkit.getConsoleSender().sendMessage(prefix + "§cThere is a new update available ("+version+"): §6https://www.spigotmc.org/resources/autocrafter.113127/");
+            } else {
+                Bukkit.getConsoleSender().sendMessage(prefix + "Up to date!");
+            }
+        });
 
     }
 

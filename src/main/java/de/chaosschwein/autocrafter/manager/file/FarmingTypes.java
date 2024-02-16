@@ -22,7 +22,12 @@ public class FarmingTypes {
         setDefault();
 
         FileConfiguration config = fileManager.getConfig();
-        for (String key : config.getKeys(false)) {
+        ConfigurationSection configTypes = config.getConfigurationSection("type");
+        if (configTypes == null) {
+            System.out.println("[AutoCrafter] No farm types found");
+            return;
+        }
+        for (String key : configTypes.getKeys(false)) {
             if (config.getBoolean("type." + key + ".enable")) {
                 Material material = Material.getMaterial(key);
                 if (material == null) {
@@ -49,17 +54,15 @@ public class FarmingTypes {
                 types.add(new FarmType(material, config.getBoolean("type." + key + ".enable"), returnMap, config.getBoolean("type." + key + ".soul_sand_required")));
             }
         }
-
-        System.out.println("§a[AutoCrafter] Loaded " + types.size() + " farm types.");
     }
 
     public void setDefault() {
         fileManager.writeDefault(new HashMap<>() {{
-            put("type.WHEAT.enable", true);
-            put("type.WHEAT.return.WHEAT_SEEDS.min", 0);
-            put("type.WHEAT.return.WHEAT_SEEDS.max", 3);
-            put("type.WHEAT.return.WHEAT.min", 1);
-            put("type.WHEAT.return.WHEAT.max", 1);
+            put("type.WHEAT_SEEDS.enable", true);
+            put("type.WHEAT_SEEDS.return.WHEAT_SEEDS.min", 0);
+            put("type.WHEAT_SEEDS.return.WHEAT_SEEDS.max", 2);
+            put("type.WHEAT_SEEDS.return.WHEAT.min", 1);
+            put("type.WHEAT_SEEDS.return.WHEAT.max", 2);
 
             put("type.CARROT.enable", true);
             put("type.CARROT.return.CARROT.min", 1);
@@ -71,15 +74,15 @@ public class FarmingTypes {
             put("type.POTATO.return.POISONOUS_POTATO.min", 0);
             put("type.POTATO.return.POISONOUS_POTATO.max", 1);
 
-            put("type.BEETROOT.enable", true);
-            put("type.BEETROOT.return.BEETROOT.min", 1);
-            put("type.BEETROOT.return.BEETROOT.max", 4);
-            put("type.BEETROOT.return.BEETROOT_SEEDS.min", 0);
-            put("type.BEETROOT.return.BEETROOT_SEEDS.max", 1);
+            put("type.BEETROOT_SEEDS.enable", true);
+            put("type.BEETROOT_SEEDS.return.BEETROOT.min", 1);
+            put("type.BEETROOT_SEEDS.return.BEETROOT.max", 4);
+            put("type.BEETROOT_SEEDS.return.BEETROOT_SEEDS.min", 1);
+            put("type.BEETROOT_SEEDS.return.BEETROOT_SEEDS.max", 2);
 
-            put("type.SWEET_BERRY.enable", true);
-            put("type.SWEET_BERRY.return.SWEET_BERRIES.min", 1);
-            put("type.SWEET_BERRY.return.SWEET_BERRIES.max", 3);
+            put("type.SWEET_BERRIES.enable", true);
+            put("type.SWEET_BERRIES.return.SWEET_BERRIES.min", 1);
+            put("type.SWEET_BERRIES.return.SWEET_BERRIES.max", 3);
 
             put("type.NETHER_WART.enable", true);
             put("type.NETHER_WART.return.NETHER_WART.min", 1);
