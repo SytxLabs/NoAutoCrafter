@@ -4,9 +4,11 @@ import de.chaosschwein.autocrafter.cmd.AutoCommand;
 import de.chaosschwein.autocrafter.cmd.ReceiverCommand;
 import de.chaosschwein.autocrafter.cmd.SenderCommand;
 import de.chaosschwein.autocrafter.listener.CrafterListener;
+import de.chaosschwein.autocrafter.listener.FarmingStationListener;
 import de.chaosschwein.autocrafter.listener.InventoryListener;
 import de.chaosschwein.autocrafter.manager.FileManager;
 import de.chaosschwein.autocrafter.manager.file.CrafterFile;
+import de.chaosschwein.autocrafter.manager.file.FarmingTypes;
 import de.chaosschwein.autocrafter.manager.file.Language;
 import de.chaosschwein.autocrafter.manager.file.Permission;
 import de.chaosschwein.autocrafter.utils.Message;
@@ -20,12 +22,14 @@ public final class AutoMain extends JavaPlugin {
 
     public static final Language language = new Language();
     public static final Permission permission = new Permission();
+    public static final FarmingTypes farmingTypes = new FarmingTypes();
     public static FileManager config;
     public static String prefix = "&8[&aAutoCrafter§8] &7";
     public static boolean crafter = true;
     public static boolean breaker = true;
     public static boolean placer = true;
     public static boolean transport = true;
+    public static boolean farming_station = true;
 
     public static AutoMain instance;
 
@@ -45,15 +49,19 @@ public final class AutoMain extends JavaPlugin {
             put("breaker", true);
             put("placer", true);
             put("transport", true);
+            put("farming_station", true);
         }});
         prefix = config.read("prefix");
         crafter = (boolean) config.read("crafter", true);
         breaker = (boolean) config.read("breaker", true);
         placer = (boolean) config.read("placer", true);
         transport = (boolean) config.read("transport", true);
+        farming_station = (boolean) config.read("farming_station", true);
+
 
         Bukkit.getPluginManager().registerEvents(new CrafterListener(), this);
         Bukkit.getPluginManager().registerEvents(new InventoryListener(), this);
+        Bukkit.getPluginManager().registerEvents(new FarmingStationListener(), this);
 
         new CrafterFile().cache();
         Objects.requireNonNull(getCommand("autocrafter")).setExecutor(new AutoCommand());

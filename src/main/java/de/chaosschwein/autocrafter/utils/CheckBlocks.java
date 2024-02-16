@@ -133,4 +133,43 @@ public class CheckBlocks {
         return b.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() + 1, loc.getBlockZ()).getType() == Material.END_ROD &&
                 b.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() - 1, loc.getBlockZ()).getType() == Material.HOPPER;
     }
+
+    public boolean isFarmingStation() {
+        Block b = this.block;
+        Location loc = b.getLocation();
+        if (b.getType() != Material.DISPENSER) {
+            return false;
+        }
+        if (b.getBlockData() instanceof Directional) {
+            BlockFace face = ((Directional) b.getBlockData()).getFacing();
+            return switch (face) {
+                case NORTH ->
+                        (b.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() + 1, loc.getBlockZ() - 1).getType() == Material.REDSTONE_LAMP &&
+                                (
+                                        b.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() - 1, loc.getBlockZ() - 1).getType() == Material.FARMLAND ||
+                                        b.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() - 1, loc.getBlockZ() - 1).getType() == Material.SOUL_SAND
+                                ) && b.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() - 2, loc.getBlockZ() - 1).getType() == Material.HOPPER);
+                case SOUTH ->
+                        (b.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() + 1, loc.getBlockZ() + 1).getType() == Material.REDSTONE_LAMP &&
+                                (
+                                        b.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() - 1, loc.getBlockZ() + 1).getType() == Material.FARMLAND ||
+                                        b.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() - 1, loc.getBlockZ() + 1).getType() == Material.SOUL_SAND
+                                ) && b.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() - 2, loc.getBlockZ() + 1).getType() == Material.HOPPER);
+                case WEST ->
+                        (b.getWorld().getBlockAt(loc.getBlockX() - 1, loc.getBlockY() + 1, loc.getBlockZ()).getType() == Material.REDSTONE_LAMP &&
+                                (
+                                        b.getWorld().getBlockAt(loc.getBlockX() - 1, loc.getBlockY() - 1, loc.getBlockZ()).getType() == Material.FARMLAND ||
+                                        b.getWorld().getBlockAt(loc.getBlockX() - 1, loc.getBlockY() - 1, loc.getBlockZ()).getType() == Material.SOUL_SAND
+                                ) && b.getWorld().getBlockAt(loc.getBlockX() - 1, loc.getBlockY() - 2, loc.getBlockZ()).getType() == Material.HOPPER);
+                case EAST ->
+                        (b.getWorld().getBlockAt(loc.getBlockX() + 1, loc.getBlockY() + 1, loc.getBlockZ()).getType() == Material.REDSTONE_LAMP &&
+                                (
+                                        b.getWorld().getBlockAt(loc.getBlockX() + 1, loc.getBlockY() - 1, loc.getBlockZ()).getType() == Material.FARMLAND ||
+                                        b.getWorld().getBlockAt(loc.getBlockX() + 1, loc.getBlockY() - 1, loc.getBlockZ()).getType() == Material.SOUL_SAND
+                                ) && b.getWorld().getBlockAt(loc.getBlockX() + 1, loc.getBlockY() - 2, loc.getBlockZ()).getType() == Material.HOPPER);
+                default -> false;
+            };
+        }
+        return false;
+    }
 }
