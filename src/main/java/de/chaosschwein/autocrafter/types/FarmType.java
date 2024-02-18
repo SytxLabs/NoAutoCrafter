@@ -1,4 +1,4 @@
-package de.chaosschwein.autocrafter.enums;
+package de.chaosschwein.autocrafter.types;
 
 import de.chaosschwein.autocrafter.main.AutoMain;
 import org.bukkit.Material;

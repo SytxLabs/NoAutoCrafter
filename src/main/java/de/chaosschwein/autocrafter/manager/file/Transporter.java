@@ -1,172 +1,196 @@
 package de.chaosschwein.autocrafter.manager.file;
 
+import de.chaosschwein.autocrafter.enums.ChannelType;
 import de.chaosschwein.autocrafter.manager.FileManager;
-import org.bukkit.Bukkit;
+import de.chaosschwein.autocrafter.types.Channel;
+import de.chaosschwein.autocrafter.types.Receiver;
+import de.chaosschwein.autocrafter.types.Sender;
+import de.chaosschwein.autocrafter.utils.Utils;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
+import org.bukkit.configuration.ConfigurationSection;
 
-import java.util.HashMap;
-import java.util.Objects;
+import java.util.*;
+
+import static de.chaosschwein.autocrafter.cmd.ReceiverCommand.receiver;
 
 public class Transporter {
 
     public final FileManager file;
+    public final Map<String, Channel> channels = new HashMap<>();
+    public final Map<Location, Sender> senders = new HashMap<>();
+    public final Map<Location, Receiver> receivers = new HashMap<>();
 
     public Transporter() {
         this.file = new FileManager("data", "transporter");
-    }
 
-    public boolean addReceiver(Player p, Block receiver, Material material) {
-        if (receiver == null) {
-            return false;
-        }
-        Location loc = receiver.getLocation();
-        if (loc.getWorld() == null) {
-            return false;
-        }
-        String locstring = loc.getWorld().getName() + "," + loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ();
-
-        file.write("Receiver." + locstring + ".OwnerUUID", p.getUniqueId().toString());
-        file.write("Receiver." + locstring + ".OwnerName", p.getName());
-        file.write("Receiver." + locstring + ".Material", material.name());
-        file.write("Receiver." + locstring + ".CreatedAT", System.currentTimeMillis());
-        return true;
-    }
-
-    @SuppressWarnings("unused")
-    public HashMap<Material, Block> getReceivers(Player p) {
-        HashMap<Material, Block> receivers = new HashMap<>();
-        if (file.getConfig().getConfigurationSection("Receiver") == null) {
-            return receivers;
-        }
-        for (String key : Objects.requireNonNull(file.getConfig().getConfigurationSection("Receiver")).getKeys(false)) {
-            if (file.read("Receiver." + key + ".OwnerUUID").equalsIgnoreCase(p.getUniqueId().toString())) {
-                String[] locations = key.split(",");
-                Location loc = new Location(Bukkit.getWorld(locations[0]), Integer.parseInt(locations[1]), Integer.parseInt(locations[2]), Integer.parseInt(locations[3]));
-                if (loc.getWorld() == null) {
-                    continue;
-                }
-                Block block = loc.getBlock();
-                if (block.getType() == Material.AIR) {
-                    continue;
-                }
-                receivers.put(Material.valueOf(file.read("Receiver." + key + ".Material")), block);
-            }
-        }
-        return receivers;
-    }
-
-    public Location getReceiver(Material mat, String uuid) {
-        if (file.getConfig().getConfigurationSection("Receiver") == null) {
-            return null;
-        }
-        for (String key : Objects.requireNonNull(file.getConfig().getConfigurationSection("Receiver")).getKeys(false)) {
-            if (file.read("Receiver." + key + ".OwnerUUID").equalsIgnoreCase(uuid)) {
-                if (file.read("Receiver." + key + ".Material").equalsIgnoreCase(mat.name())) {
-                    String[] locations = key.split(",");
-                    return new Location(Bukkit.getWorld(locations[0]), Integer.parseInt(locations[1]), Integer.parseInt(locations[2]), Integer.parseInt(locations[3]));
+        ConfigurationSection section = file.getConfig().getConfigurationSection("Channel");
+        if (section != null) {
+            for (String hash : section.getKeys(false)) {
+                Channel channel = getChannel(hash);
+                if (channel != null) {
+                    channels.put(hash, channel);
                 }
             }
         }
-        return null;
-    }
-
-    @SuppressWarnings("UnusedReturnValue")
-    public boolean removeReceivers(Location loc) {
-        if (loc.getWorld() == null) {
-            return false;
-        }
-        String locstring = loc.getWorld().getName() + "," + loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ();
-        file.write("Receiver." + locstring + ".OwnerUUID", null);
-        file.write("Receiver." + locstring + ".OwnerName", null);
-        file.write("Receiver." + locstring + ".Material", null);
-        file.write("Receiver." + locstring + ".CreatedAT", null);
-        file.write("Receiver." + locstring, null);
-        return true;
-    }
-
-    public boolean containsReceiver(Location loc) {
-        if (loc.getWorld() == null) {
-            return false;
-        }
-        String locstring = loc.getWorld().getName() + "," + loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ();
-        return file.read("Receiver." + locstring + ".Material") != null;
-    }
-
-    public boolean containsReceiver(Material material, String uuid) {
-        if (file.getConfig().getConfigurationSection("Receiver") == null) {
-            return false;
-        }
-        for (String key : Objects.requireNonNull(file.getConfig().getConfigurationSection("Receiver")).getKeys(false)) {
-            if (file.read("Receiver." + key + ".OwnerUUID").equalsIgnoreCase(uuid)) {
-                if (file.read("Receiver." + key + ".Material").equalsIgnoreCase(material.name())) {
-                    return true;
+        section = file.getConfig().getConfigurationSection("Receiver");
+        if (section != null) {
+            for (String locString : section.getKeys(false)) {
+                Location loc = file.stringToLoc(locString);
+                if (loc != null) {
+                    Channel channel = channels.get(file.read("Receiver." + locString + ".Channel"));
+                    Receiver receiver = new Receiver(loc, channel, Integer.parseInt(file.read("Receiver." + locString + ".IdInChannel")));
+                    if (receiver.isReceiver) {
+                        receivers.put(loc, receiver);
+                        channel.addReceiver(receiver);
+                    }
                 }
             }
         }
-        return false;
+
+        section = file.getConfig().getConfigurationSection("Sender");
+        if (section != null) {
+            for (String locString : section.getKeys(false)) {
+                Location loc = file.stringToLoc(locString);
+                if (loc != null) {
+                    Channel channel = channels.get(file.read("Sender." + locString + ".Channel"));
+                    Sender sender = new Sender(loc, channel);
+                    if (sender.isSender) {
+                        senders.put(loc, sender);
+                        channel.addSender(sender);
+                    }
+                }
+            }
+        }
     }
 
-    public boolean addSender(Player p, Block sender, Material material) {
-        if (sender == null) {
-            return false;
-        }
-        Location loc = sender.getLocation();
-        if (loc.getWorld() == null) {
-            return false;
-        }
-        String locstring = loc.getWorld().getName() + "," + loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ();
-
-        file.write("Sender." + locstring + ".OwnerUUID", p.getUniqueId().toString());
-        file.write("Sender." + locstring + ".OwnerName", p.getName());
-        file.write("Sender." + locstring + ".Material", material.name());
-        file.write("Sender." + locstring + ".CreatedAT", System.currentTimeMillis());
+    public boolean addChannel(Channel channel) {
+        String hash = channel.getHash(true);
+        file.write("Channel." + hash + ".Type", channel.type().toString());
+        file.write("Channel." + hash + ".Material", channel.material().toString());
+        file.write("Channel." + hash + ".Name", channel.name());
+        file.write("Channel." + hash + ".OwnerUUID", channel.ownerUUID());
+        file.write("Channel." + hash + ".Password", Utils.hash(channel.password()));
+        channels.put(hash, channel);
         return true;
     }
 
-    @SuppressWarnings("UnusedReturnValue")
-    public boolean removeSender(Location loc) {
-        if (loc.getWorld() == null) {
-            return false;
-        }
-        String locstring = loc.getWorld().getName() + "," + loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ();
-        file.write("Sender." + locstring + ".OwnerUUID", null);
-        file.write("Sender." + locstring + ".OwnerName", null);
-        file.write("Sender." + locstring + ".Material", null);
-        file.write("Sender." + locstring + ".CreatedAT", null);
-        file.write("Sender." + locstring, null);
+    public boolean removeChannel(Channel channel) {
+        String hash = channel.getHash();
+        file.remove("Channel." + hash + ".Type");
+        file.remove("Channel." + hash + ".Material");
+        file.remove("Channel." + hash + ".Name");
+        file.remove("Channel." + hash + ".OwnerUUID");
+        file.remove("Channel." + hash + ".Password");
+        file.remove("Channel." + hash);
+        channels.remove(hash);
         return true;
     }
 
-    public Material getSender(Location loc) {
-        if (loc.getWorld() == null) {
-            return null;
+    public Channel getChannel(String hash) {
+        if (!file.contains("Channel." + hash)) return null;
+        Channel channel = new Channel(
+                ChannelType.valueOf(file.read("Channel." + hash + ".Type")),
+                Material.getMaterial(file.read("Channel." + hash + ".Material")),
+                file.read("Channel." + hash + ".Name"),
+                file.read("Channel." + hash + ".OwnerUUID"),
+                file.read("Channel." + hash + ".Password")
+        );
+        if (channels.containsKey(hash)) {
+            channels.replace(hash, channel);
+        } else {
+            channels.put(hash, channel);
         }
-        if (file.read("Sender." + loc.getWorld().getName() + "," + loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ() + ".Material") == null) {
-            return null;
-        }
-        String locstring = loc.getWorld().getName() + "," + loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ();
-        return Material.valueOf(file.read("Sender." + locstring + ".Material"));
+        return channel;
     }
 
-    public String getSenderOwner(Location loc) {
-        if (loc.getWorld() == null) {
-            return null;
+    public boolean addSender(Sender sender) {
+        if (!sender.isSender) return false;
+        Location loc = sender.getChest().getLocation();
+        String locString = file.locToString(loc);
+        file.write("Sender." + locString + ".Type", sender.getType().toString());
+        file.write("Sender." + locString + ".Channel", sender.getChannel().getHash());
+        senders.put(loc, sender);
+        Channel channel = channels.get(sender.getChannel().getHash());
+        if (channel != null) {
+            channel.addSender(sender);
         }
-        if (file.read("Sender." + loc.getWorld().getName() + "," + loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ() + ".OwnerUUID") == null) {
-            return null;
-        }
-        String locstring = loc.getWorld().getName() + "," + loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ();
-        return file.read("Sender." + locstring + ".OwnerUUID");
+        return true;
     }
 
-    public boolean containsSender(Location loc) {
-        if (loc.getWorld() == null) {
-            return false;
+    public void removeSender(Sender sender) {
+        if (!sender.isSender) return;
+        Location loc = sender.getChest().getLocation();
+        String locString = file.locToString(loc);
+        file.remove("Sender." + locString + ".Type");
+        file.remove("Sender." + locString + ".PolicyType");
+        file.remove("Sender." + locString + ".Channel");
+        file.remove("Sender." + locString);
+        senders.remove(loc);
+        Channel channel = channels.get(sender.getChannel().getHash());
+        if (channel != null) {
+            channel.removeSender(sender);
         }
-        String locstring = loc.getWorld().getName() + "," + loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ();
-        return file.read("Sender." + locstring + ".Material") != null;
+    }
+
+    public void removeSender(Location loc) {
+        if (!isSender(loc)) return;
+        String locString = file.locToString(loc);
+        file.remove("Sender." + locString + ".Type");
+        file.remove("Sender." + locString + ".PolicyType");
+        file.remove("Sender." + locString + ".Channel");
+        file.remove("Sender." + locString);
+        senders.remove(loc);
+        Channel channel = channels.get(senders.get(loc).getChannel().getHash());
+        if (channel != null) {
+            channel.removeSender(senders.get(loc));
+        }
+    }
+
+    public boolean addReceiver(Receiver receiver) {
+        if (!receiver.isReceiver) return false;
+        String locString = file.locToString(receiver.getChest().getLocation());
+        file.write("Receiver." + locString + ".Channel", receiver.getChannel().getHash());
+        file.write("Receiver." + locString + ".IdInChannel", receiver.getIdInChannel());
+        receivers.put(receiver.getChest().getLocation(), receiver);
+        Channel channel = channels.get(receiver.getChannel().getHash());
+        if (channel != null) {
+            channel.addReceiver(receiver);
+        }
+        return true;
+    }
+
+    public boolean removeReceiver(Receiver receiver) {
+        if (!receiver.isReceiver) return false;
+        String locString = file.locToString(receiver.getChest().getLocation());
+        file.remove("Receiver." + locString + ".Channel");
+        file.remove("Receiver." + locString + ".IdInChannel");
+        file.remove("Receiver." + locString);
+        receivers.remove(receiver.getChest().getLocation());
+        Channel channel = channels.get(receiver.getChannel().getHash());
+        if (channel != null) {
+            channel.removeReceiver(receiver);
+        }
+        return true;
+    }
+
+    public void removeReceiver(Location loc) {
+        if (!isReceiver(loc)) return;
+        String locString = file.locToString(loc);
+        file.remove("Receiver." + locString + ".Channel");
+        file.remove("Receiver." + locString);
+        receivers.remove(loc);
+        Channel channel = channels.get(receivers.get(loc).getChannel().getHash());
+        if (channel != null) {
+            channel.removeReceiver(receivers.get(loc));
+        }
+    }
+
+    public boolean isSender(Location loc) {
+        return file.contains("Sender." + file.locToString(loc));
+    }
+
+    public boolean isReceiver(Location loc) {
+        return file.contains("Receiver." + file.locToString(loc));
     }
 }

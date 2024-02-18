@@ -8,9 +8,21 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.BlockIterator;
 
 import java.util.ArrayList;
+import java.util.Objects;
+import java.util.function.Function;
 
 @SuppressWarnings("unused")
 public class Utils {
+
+    private static final UpdatableBCrypt bcrypt = new UpdatableBCrypt(11);
+
+    public static String hash(String password) {
+        return bcrypt.hash(password);
+    }
+
+    public static boolean verifyHash(String password, String hash) {
+        return bcrypt.verifyHash(password, hash);
+    }
 
     public static Block getTargetBlock(Player player, int range) {
         BlockIterator blockIterator = new BlockIterator(player, range);
@@ -132,6 +144,23 @@ public class Utils {
             }
             if (itemStack.getType() == material) {
                 int newAmount = itemStack.getAmount() + amount;
+                if (newAmount <= itemStack.getMaxStackSize()) {
+                    return false;
+                }
+            }
+        }
+        return freeSlots <= 0;
+    }
+
+    public static boolean hasNotEnoughPlace(Inventory inventory, ItemStack i) {
+        int freeSlots = 0;
+        for (ItemStack itemStack : inventory.getContents()) {
+            if (itemStack == null) {
+                freeSlots++;
+                continue;
+            }
+            if (itemStack.getType() == i.getType()) {
+                int newAmount = itemStack.getAmount() + i.getAmount();
                 if (newAmount <= itemStack.getMaxStackSize()) {
                     return false;
                 }

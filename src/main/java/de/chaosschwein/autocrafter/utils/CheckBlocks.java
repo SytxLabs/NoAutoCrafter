@@ -6,6 +6,8 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Directional;
 
+import java.util.List;
+
 public class CheckBlocks {
 
     private final Block block;
@@ -167,6 +169,62 @@ public class CheckBlocks {
                                         b.getWorld().getBlockAt(loc.getBlockX() + 1, loc.getBlockY() - 1, loc.getBlockZ()).getType() == Material.FARMLAND ||
                                         b.getWorld().getBlockAt(loc.getBlockX() + 1, loc.getBlockY() - 1, loc.getBlockZ()).getType() == Material.SOUL_SAND
                                 ) && b.getWorld().getBlockAt(loc.getBlockX() + 1, loc.getBlockY() - 2, loc.getBlockZ()).getType() == Material.HOPPER);
+                default -> false;
+            };
+        }
+        return false;
+    }
+
+    public boolean isBreeder() {
+        Block b = this.block;
+        Location loc = b.getLocation();
+        if (b.getType() != Material.DISPENSER) {
+            return false;
+        }
+        if (b.getBlockData() instanceof Directional) {
+            BlockFace face = ((Directional) b.getBlockData()).getFacing();
+            return switch (face) {
+                case NORTH -> (b.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() - 1, loc.getBlockZ() - 1).getType() == Material.COARSE_DIRT &&
+                        b.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() + 1, loc.getBlockZ()).getType() == Material.HOPPER &&
+                        b.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() + 2, loc.getBlockZ() - 1).getType() == Material.REDSTONE_LAMP);
+                case SOUTH -> (b.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() - 1, loc.getBlockZ() + 1).getType() == Material.COARSE_DIRT &&
+                        b.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() + 1, loc.getBlockZ()).getType() == Material.HOPPER &&
+                        b.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() + 2, loc.getBlockZ() + 1).getType() == Material.REDSTONE_LAMP);
+                case WEST -> (b.getWorld().getBlockAt(loc.getBlockX() - 1, loc.getBlockY() - 1, loc.getBlockZ()).getType() == Material.COARSE_DIRT &&
+                        b.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() + 1, loc.getBlockZ()).getType() == Material.HOPPER &&
+                        b.getWorld().getBlockAt(loc.getBlockX() - 1, loc.getBlockY() + 2, loc.getBlockZ()).getType() == Material.REDSTONE_LAMP);
+                case EAST ->
+                        (b.getWorld().getBlockAt(loc.getBlockX() + 1, loc.getBlockY() - 1, loc.getBlockZ()).getType() == Material.COARSE_DIRT &&
+                                b.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() + 1, loc.getBlockZ()).getType() == Material.HOPPER &&
+                                b.getWorld().getBlockAt(loc.getBlockX() + 1, loc.getBlockY() + 2, loc.getBlockZ()).getType() == Material.REDSTONE_LAMP);
+                default -> false;
+            };
+        }
+        return false;
+    }
+
+    public boolean isEntityInteractor() {
+        Block b = this.block;
+        Location loc = b.getLocation();
+        if (b.getType() != Material.DISPENSER) {
+            return false;
+        }
+        if (b.getBlockData() instanceof Directional) {
+            BlockFace face = ((Directional) b.getBlockData()).getFacing();
+            List<Material> materials = List.of(Material.DIRT, Material.GRASS_BLOCK, Material.COARSE_DIRT, Material.PODZOL, Material.FARMLAND, Material.DIRT_PATH, Material.ROOTED_DIRT);
+            return switch (face) {
+                case NORTH -> (materials.contains(b.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() - 1, loc.getBlockZ() - 1).getType()) &&
+                        b.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() - 2, loc.getBlockZ() - 1).getType() == Material.HOPPER &&
+                        b.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() + 1, loc.getBlockZ()).getType() == Material.HOPPER);
+                case SOUTH -> (materials.contains(b.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() - 1, loc.getBlockZ() + 1).getType()) &&
+                        b.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() - 2, loc.getBlockZ() + 1).getType() == Material.HOPPER &&
+                        b.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() + 1, loc.getBlockZ()).getType() == Material.HOPPER);
+                case WEST -> (materials.contains(b.getWorld().getBlockAt(loc.getBlockX() - 1, loc.getBlockY() - 1, loc.getBlockZ()).getType()) &&
+                        b.getWorld().getBlockAt(loc.getBlockX() - 1, loc.getBlockY() - 2, loc.getBlockZ()).getType() == Material.HOPPER &&
+                        b.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() + 1, loc.getBlockZ()).getType() == Material.HOPPER);
+                case EAST -> (materials.contains(b.getWorld().getBlockAt(loc.getBlockX() + 1, loc.getBlockY() - 1, loc.getBlockZ()).getType()) &&
+                        b.getWorld().getBlockAt(loc.getBlockX() + 1, loc.getBlockY() - 2, loc.getBlockZ()).getType() == Material.HOPPER &&
+                        b.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() + 1, loc.getBlockZ()).getType() == Material.HOPPER);
                 default -> false;
             };
         }

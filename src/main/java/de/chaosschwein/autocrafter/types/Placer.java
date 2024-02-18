@@ -1,4 +1,4 @@
-package de.chaosschwein.autocrafter.enums;
+package de.chaosschwein.autocrafter.types;
 
 import de.chaosschwein.autocrafter.utils.CheckBlocks;
 import org.bukkit.Location;

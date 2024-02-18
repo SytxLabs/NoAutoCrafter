@@ -31,7 +31,7 @@ public class Language {
     public final String InventoryAddItemLore;
     public final String InventoryCreateReceiver;
     public final String InventoryCreateSender;
-    private final FileManager fileManager;
+    public final FileManager fileManager;
 
     public Language() {
         this.fileManager = new FileManager("language");

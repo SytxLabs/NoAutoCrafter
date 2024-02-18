@@ -1,11 +1,10 @@
-package de.chaosschwein.autocrafter.enums;
+package de.chaosschwein.autocrafter.types;
 
 import de.chaosschwein.autocrafter.utils.CheckBlocks;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.*;
 import org.bukkit.block.data.*;
-import org.bukkit.block.data.type.Sapling;
 
 public class FarmingStation {
 

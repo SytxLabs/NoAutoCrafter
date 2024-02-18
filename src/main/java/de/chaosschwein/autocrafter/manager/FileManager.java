@@ -1,6 +1,8 @@
 package de.chaosschwein.autocrafter.manager;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -73,5 +75,24 @@ public class FileManager {
             cfg.addDefault(key, defaultSet.get(key));
         }
         saveConfig(cfg);
+    }
+
+    public void remove(String key) {
+        FileConfiguration cfg = getConfig();
+        cfg.set(key, null);
+        saveConfig(cfg);
+    }
+
+    public boolean contains(String key) {
+        return getConfig().contains(key);
+    }
+
+    public String locToString(Location loc) {
+        return Objects.requireNonNull(loc.getWorld()).getName() + ";" + loc.getBlockX() + ";" + loc.getBlockY() + ";" + loc.getBlockZ();
+    }
+
+    public Location stringToLoc(String locString) {
+        String[] loc = locString.split(";");
+        return new Location(Bukkit.getWorld(loc[0]), Integer.parseInt(loc[1]), Integer.parseInt(loc[2]), Integer.parseInt(loc[3]));
     }
 }

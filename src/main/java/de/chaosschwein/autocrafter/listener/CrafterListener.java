@@ -1,12 +1,11 @@
 package de.chaosschwein.autocrafter.listener;
 
-import de.chaosschwein.autocrafter.enums.Breaker;
-import de.chaosschwein.autocrafter.enums.Crafter;
-import de.chaosschwein.autocrafter.enums.CraftingRezept;
-import de.chaosschwein.autocrafter.enums.Placer;
+import de.chaosschwein.autocrafter.types.Breaker;
+import de.chaosschwein.autocrafter.types.Crafter;
+import de.chaosschwein.autocrafter.types.CraftingRezept;
+import de.chaosschwein.autocrafter.types.Placer;
 import de.chaosschwein.autocrafter.main.AutoMain;
 import de.chaosschwein.autocrafter.manager.file.CrafterFile;
-import de.chaosschwein.autocrafter.manager.file.Transporter;
 import de.chaosschwein.autocrafter.utils.CheckBlocks;
 import de.chaosschwein.autocrafter.utils.DataCache;
 import de.chaosschwein.autocrafter.utils.Message;
@@ -16,19 +15,14 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
-import org.bukkit.block.Chest;
 import org.bukkit.block.Dispenser;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryMoveItemEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
-import java.util.Objects;
 
 public class CrafterListener implements Listener {
 
@@ -213,92 +207,6 @@ public class CrafterListener implements Listener {
                 if (new CrafterFile().contains(c)) {
                     new CrafterFile().delete(c);
                     msg.send(AutoMain.language.CrafterDeleted);
-                }
-            }
-        }
-    }
-
-    @EventHandler
-    public void onBlockReceiver(BlockBreakEvent e) {
-        Message msg = new Message(e.getPlayer());
-        if (e.getBlock().getType() == Material.TRAPPED_CHEST) {
-            if (new CheckBlocks(e.getBlock()).isReceiver()) {
-                if (new Transporter().containsReceiver(e.getBlock().getLocation())) {
-                    new Transporter().removeReceivers(e.getBlock().getLocation());
-                    msg.send(AutoMain.language.ReceiverDeleted);
-                }
-            }
-            return;
-        }
-        if (e.getBlock().getType() == Material.END_ROD) {
-            if (e.getBlock().getLocation().add(0, -1, 0).getBlock().getType() != Material.TRAPPED_CHEST) {
-                return;
-            }
-            Block dispenser = e.getBlock().getLocation().add(0, -1, 0).getBlock();
-            if (new CheckBlocks(dispenser).isReceiver()) {
-                if (new Transporter().containsReceiver(dispenser.getLocation())) {
-                    new Transporter().removeReceivers(dispenser.getLocation());
-                    msg.send(AutoMain.language.ReceiverDeleted);
-                }
-            }
-            return;
-        }
-        if (e.getBlock().getType() == Material.HOPPER) {
-            if (e.getBlock().getLocation().add(0, +1, 0).getBlock().getType() != Material.TRAPPED_CHEST) {
-                return;
-            }
-            Block dispenser = e.getBlock().getLocation().add(0, +1, 0).getBlock();
-            if (new CheckBlocks(dispenser).isReceiver()) {
-                if (new Transporter().containsReceiver(dispenser.getLocation())) {
-                    new Transporter().removeReceivers(dispenser.getLocation());
-                    msg.send(AutoMain.language.ReceiverDeleted);
-                }
-            }
-        }
-    }
-
-    @EventHandler
-    public void onBlockSender(BlockBreakEvent e) {
-        Message msg = new Message(e.getPlayer());
-        if (e.getBlock().getType() == Material.TRAPPED_CHEST) {
-            if (new CheckBlocks(e.getBlock()).isSender()) {
-                if (new Transporter().containsSender(e.getBlock().getLocation())) {
-                    new Transporter().removeSender(e.getBlock().getLocation());
-                    msg.send(AutoMain.language.SenderDeleted);
-                }
-            }
-            return;
-        }
-        if (e.getBlock().getType() == Material.END_ROD) {
-            if (e.getBlock().getLocation().add(0, -1, 0).getBlock().getType() != Material.TRAPPED_CHEST) {
-                return;
-            }
-            Block dispenser = e.getBlock().getLocation().add(0, -1, 0).getBlock();
-            if (new CheckBlocks(dispenser).isSender()) {
-                if (new Transporter().containsSender(dispenser.getLocation())) {
-                    new Transporter().removeSender(dispenser.getLocation());
-                    msg.send(AutoMain.language.SenderDeleted);
-                }
-            }
-            return;
-        }
-        if (e.getBlock().getType() == Material.HOPPER) {
-            Block dispenser;
-            if (e.getBlock().getLocation().add(0, 0, +1).getBlock().getType() == Material.TRAPPED_CHEST) {
-                dispenser = e.getBlock().getLocation().add(0, 0, +1).getBlock();
-            } else if (e.getBlock().getLocation().add(0, 0, -1).getBlock().getType() == Material.TRAPPED_CHEST) {
-                dispenser = e.getBlock().getLocation().add(0, 0, -1).getBlock();
-            } else if (e.getBlock().getLocation().add(+1, 0, 0).getBlock().getType() == Material.TRAPPED_CHEST) {
-                dispenser = e.getBlock().getLocation().add(+1, 0, 0).getBlock();
-            } else if (e.getBlock().getLocation().add(-1, 0, 0).getBlock().getType() == Material.TRAPPED_CHEST) {
-                dispenser = e.getBlock().getLocation().add(-1, 0, 0).getBlock();
-            } else {
-                return;
-            }
-            if (new CheckBlocks(dispenser).isSender()) {
-                if (new Transporter().containsSender(dispenser.getLocation())) {
-                    new Transporter().removeSender(dispenser.getLocation());
-                    msg.send(AutoMain.language.SenderDeleted);
                 }
             }
         }
@@ -559,90 +467,6 @@ public class CrafterListener implements Listener {
 
                 Bukkit.getScheduler().runTaskLater(AutoMain.instance, () -> locAfterMove.getBlock().setType(Material.AIR), 2);
             }
-        }
-    }
-
-    @EventHandler
-    public void senderEvent(InventoryMoveItemEvent e) {
-        Inventory inv = e.getDestination();
-        Location loc = inv.getLocation();
-        if (loc == null) {
-            return;
-        }
-        if (loc.getBlock().getType() == Material.TRAPPED_CHEST) {
-            Transporter transporter = new Transporter();
-            Block chest = loc.getBlock();
-            if (chest.getType() != Material.TRAPPED_CHEST || !AutoMain.transport || !new CheckBlocks(chest).isSender() || !transporter.containsSender(loc)) {
-                return;
-            }
-            Location receiverLoc = transporter.getReceiver(transporter.getSender(loc), transporter.getSenderOwner(loc));
-            if (receiverLoc == null || receiverLoc.getBlock().getType() != Material.TRAPPED_CHEST || !new CheckBlocks(receiverLoc.getBlock()).isReceiver()) {
-                return;
-            }
-            Chest receiver = (Chest) receiverLoc.getBlock().getState();
-            ItemStack item = e.getItem();
-            if (Utils.hasNotEnoughPlace(receiver.getInventory(), item.getType(), item.getAmount())) {
-                return;
-            }
-
-            ((Chest) receiverLoc.getBlock().getState()).getBlockInventory().addItem(item);
-            receiverLoc.getBlock().getState().update();
-            ((Chest) receiverLoc.getBlock().getState()).getBlockInventory().getViewers().forEach(player -> {
-                if (player instanceof Player) {
-                    try {
-                        //noinspection UnstableApiUsage
-                        ((Player) player).updateInventory();
-                    } catch (Exception ignored) {
-                    }
-                }
-            });
-
-            Utils.removeItem(e.getSource(), item.getType(), item.getAmount());
-
-            e.setItem(new ItemStack(Material.AIR));
-        }
-    }
-
-
-    @EventHandler
-    public void onInventoryInteract(InventoryClickEvent event) {
-        Inventory inv = event.getInventory();
-        Location loc = inv.getLocation();
-        if (loc == null) {
-            return;
-        }
-        if (loc.getBlock().getType() == Material.TRAPPED_CHEST) {
-            Transporter transporter = new Transporter();
-            Block chest = loc.getBlock();
-            if (chest.getType() != Material.TRAPPED_CHEST || !AutoMain.transport || !new CheckBlocks(chest).isSender() || !transporter.containsSender(loc)) {
-                return;
-            }
-            Location receiverLoc = transporter.getReceiver(transporter.getSender(loc), transporter.getSenderOwner(loc));
-            if (receiverLoc == null || receiverLoc.getBlock().getType() != Material.TRAPPED_CHEST || !new CheckBlocks(receiverLoc.getBlock()).isReceiver()) {
-                return;
-            }
-            Chest receiver = (Chest) receiverLoc.getBlock().getState();
-            ItemStack item = event.getCurrentItem();
-            if (item == null) {
-                return;
-            }
-            if (Utils.hasNotEnoughPlace(receiver.getInventory(), item.getType(), item.getAmount())) {
-                return;
-            }
-
-            ((Chest) receiverLoc.getBlock().getState()).getBlockInventory().addItem(item);
-            receiverLoc.getBlock().getState().update();
-            ((Chest) receiverLoc.getBlock().getState()).getBlockInventory().getViewers().forEach(player -> {
-                if (player instanceof Player) {
-                    try {
-                        //noinspection UnstableApiUsage
-                        ((Player) player).updateInventory();
-                    } catch (Exception ignored) {
-                    }
-                }
-            });
-
-            Utils.removeItem(Objects.requireNonNull(event.getClickedInventory()), item.getType(), item.getAmount());
         }
     }
 }

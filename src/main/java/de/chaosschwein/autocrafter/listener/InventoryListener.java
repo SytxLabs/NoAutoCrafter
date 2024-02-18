@@ -3,7 +3,7 @@ package de.chaosschwein.autocrafter.listener;
 import de.chaosschwein.autocrafter.cmd.AutoCommand;
 import de.chaosschwein.autocrafter.cmd.ReceiverCommand;
 import de.chaosschwein.autocrafter.cmd.SenderCommand;
-import de.chaosschwein.autocrafter.enums.CraftingRezept;
+import de.chaosschwein.autocrafter.types.CraftingRezept;
 import de.chaosschwein.autocrafter.main.AutoMain;
 import de.chaosschwein.autocrafter.manager.file.CrafterFile;
 import de.chaosschwein.autocrafter.manager.file.Transporter;

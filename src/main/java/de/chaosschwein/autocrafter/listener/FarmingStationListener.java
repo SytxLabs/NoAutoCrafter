@@ -1,6 +1,6 @@
 package de.chaosschwein.autocrafter.listener;
 
-import de.chaosschwein.autocrafter.enums.*;
+import de.chaosschwein.autocrafter.types.*;
 import de.chaosschwein.autocrafter.main.AutoMain;
 import de.chaosschwein.autocrafter.utils.CheckBlocks;
 import de.chaosschwein.autocrafter.utils.Utils;

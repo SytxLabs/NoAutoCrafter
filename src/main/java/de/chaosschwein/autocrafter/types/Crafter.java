@@ -1,4 +1,4 @@
-package de.chaosschwein.autocrafter.enums;
+package de.chaosschwein.autocrafter.types;
 
 import de.chaosschwein.autocrafter.manager.file.CrafterFile;
 import de.chaosschwein.autocrafter.utils.CheckBlocks;

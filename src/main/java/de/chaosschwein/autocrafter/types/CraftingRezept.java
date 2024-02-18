@@ -1,4 +1,4 @@
-package de.chaosschwein.autocrafter.enums;
+package de.chaosschwein.autocrafter.types;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;

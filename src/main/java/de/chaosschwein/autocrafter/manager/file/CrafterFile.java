@@ -1,7 +1,7 @@
 package de.chaosschwein.autocrafter.manager.file;
 
-import de.chaosschwein.autocrafter.enums.Crafter;
-import de.chaosschwein.autocrafter.enums.CraftingRezept;
+import de.chaosschwein.autocrafter.types.Crafter;
+import de.chaosschwein.autocrafter.types.CraftingRezept;
 import de.chaosschwein.autocrafter.manager.FileManager;
 import de.chaosschwein.autocrafter.utils.DataCache;
 import org.bukkit.Bukkit;

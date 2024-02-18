@@ -1,6 +1,8 @@
 package de.chaosschwein.autocrafter.utils;
 
-import de.chaosschwein.autocrafter.enums.Crafter;
+import de.chaosschwein.autocrafter.types.Channel;
+import de.chaosschwein.autocrafter.types.Crafter;
+import de.chaosschwein.autocrafter.types.Receiver;
 import org.bukkit.Location;
 
 import java.util.HashMap;
@@ -9,6 +11,7 @@ public class DataCache {
 
     //region Crafter
     public static final HashMap<Location, Crafter> crafter = new HashMap<>();
+
 
     public static Crafter getCrafter(Location loc) {
         if (!isCrafter(loc)) {
