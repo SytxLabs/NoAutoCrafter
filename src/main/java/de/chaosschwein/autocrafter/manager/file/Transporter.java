@@ -12,8 +12,6 @@ import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.*;
 
-import static de.chaosschwein.autocrafter.cmd.ReceiverCommand.receiver;
-
 public class Transporter {
 
     public final FileManager file;
@@ -71,6 +69,7 @@ public class Transporter {
         file.write("Channel." + hash + ".Name", channel.name());
         file.write("Channel." + hash + ".OwnerUUID", channel.ownerUUID());
         file.write("Channel." + hash + ".Password", Utils.hash(channel.password()));
+        file.write("Channel." + hash + ".Users", channel.getUsers());
         channels.put(hash, channel);
         return true;
     }
@@ -82,6 +81,7 @@ public class Transporter {
         file.remove("Channel." + hash + ".Name");
         file.remove("Channel." + hash + ".OwnerUUID");
         file.remove("Channel." + hash + ".Password");
+        file.remove("Channel." + hash + ".Users");
         file.remove("Channel." + hash);
         channels.remove(hash);
         return true;
@@ -96,6 +96,21 @@ public class Transporter {
                 file.read("Channel." + hash + ".OwnerUUID"),
                 file.read("Channel." + hash + ".Password")
         );
+        List<String> users = file.getConfig().getStringList("Channel." + hash + ".Users");
+        for (String user : users) {
+            channel.addUser(user);
+        }
+        for (Sender sender : senders.values()) {
+            if (Objects.equals(sender.getChannel().getHash(), hash))
+                channel.addSender(sender);
+        }
+        for (Receiver receiver : receivers.values()) {
+            if (Objects.equals(receiver.getChannel().getHash(), hash))
+                channel.addReceiver(receiver);
+        }
+
+
+
         if (channels.containsKey(hash)) {
             channels.replace(hash, channel);
         } else {
@@ -144,6 +159,14 @@ public class Transporter {
         Channel channel = channels.get(senders.get(loc).getChannel().getHash());
         if (channel != null) {
             channel.removeSender(senders.get(loc));
+        }
+    }
+
+    public void getSendersByChannel(Channel channel) {
+        for (Sender sender : senders.values()) {
+            if (Objects.equals(sender.getChannel().getHash(), channel.getHash())) {
+                channel.addSender(sender);
+            }
         }
     }
 

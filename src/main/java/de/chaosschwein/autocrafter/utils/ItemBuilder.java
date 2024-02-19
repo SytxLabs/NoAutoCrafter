@@ -12,6 +12,7 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @SuppressWarnings("unused")
@@ -42,6 +43,12 @@ public class ItemBuilder {
 
     public ItemBuilder setName(String name) {
         this.meta.setDisplayName(name);
+        this.item.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder setLore(List<String> lore) {
+        this.meta.setLore(lore);
         this.item.setItemMeta(meta);
         return this;
     }

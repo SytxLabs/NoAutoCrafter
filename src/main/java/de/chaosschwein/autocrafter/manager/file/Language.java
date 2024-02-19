@@ -27,10 +27,15 @@ public class Language {
     public final String SenderIsFalse;
     public final String SenderAlreadyExists;
     public final String InventoryBack;
+    public final String InventoryNext;
     public final String InventoryAddItem;
     public final String InventoryAddItemLore;
     public final String InventoryCreateReceiver;
     public final String InventoryCreateSender;
+    public final String InventoryCreateChannel;
+    public final String InventoryAddChannel;
+    public final String InventoryDeleteChannel;
+    public final String InventoryUseChannel;
     public final FileManager fileManager;
 
     public Language() {
@@ -60,10 +65,15 @@ public class Language {
         SenderAlreadyExists = fileManager.read("sender.alreadyExists");
 
         InventoryBack = fileManager.read("inventory.back");
+        InventoryNext = fileManager.read("inventory.next");
         InventoryAddItem = fileManager.read("inventory.addItem");
         InventoryAddItemLore = fileManager.read("inventory.addItemLore");
         InventoryCreateReceiver = fileManager.read("inventory.createReceiver");
         InventoryCreateSender = fileManager.read("inventory.createSender");
+        InventoryCreateChannel = fileManager.read("inventory.createChannel");
+        InventoryAddChannel = fileManager.read("inventory.addChannel");
+        InventoryDeleteChannel = fileManager.read("inventory.deleteChannel");
+        InventoryUseChannel = fileManager.read("inventory.useChannel");
     }
 
     public void setDefault() {
@@ -93,10 +103,23 @@ public class Language {
             put("sender.alreadyExists", "&7Dieser Sender ist bereits registriert!");
 
             put("inventory.back", "&cZurück");
+            put("inventory.next", "&aWeiter");
             put("inventory.addItem", "&aItem Reinlegen");
             put("inventory.addItemLore", "&5Lege das Item Rein\n&5Was Erstellt werden sollen!");
             put("inventory.createReceiver", "&aReceiver Erstellen");
             put("inventory.createSender", "&aSender Erstellen");
+            put("inventory.createChannel", "&aChannel Erstellen");
+            put("inventory.addChannel", "&aChannel Hinzufügen");
+            put("inventory.deleteChannel", "&cChannel Löschen");
+            put("inventory.useChannel", "&aChannel Nutzen");
+
+            put("sender_type.round_robin", "&7Round Robin");
+            put("sender_type.random", "&7Random");
+            put("sender_type.overflow", "&7Overflow");
+
+            put("channel_type.private", "&7Private");
+            put("sender_policy_type.protected", "&7Protected");
+            put("sender_policy_type.public", "&7Public");
         }});
     }
 }

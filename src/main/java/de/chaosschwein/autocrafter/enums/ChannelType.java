@@ -4,9 +4,9 @@ import de.chaosschwein.autocrafter.main.AutoMain;
 import org.bukkit.Material;
 
 public enum ChannelType {
-    Private("sender_policy_type.private", Material.RED_DYE),
-    Protected("sender_policy_type.protected", Material.GREEN_DYE),
-    Public("sender_policy_type.public", Material.BLUE_DYE);
+    Private("channel_type.private", Material.RED_DYE),
+    Protected("channel_type.protected", Material.GREEN_DYE),
+    Public("channel_type.public", Material.BLUE_DYE);
     private final String translationKey;
     public final Material material;
 

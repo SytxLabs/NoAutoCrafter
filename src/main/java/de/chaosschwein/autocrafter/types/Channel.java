@@ -3,6 +3,7 @@ package de.chaosschwein.autocrafter.types;
 import de.chaosschwein.autocrafter.enums.ChannelType;
 import de.chaosschwein.autocrafter.utils.Utils;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,8 +16,10 @@ public class Channel {
     public final String ownerUUID;
     public final String password;
 
-    private List<Sender> senders = new ArrayList<>();
-    private List<Receiver> receivers = new ArrayList<>();
+    private final List<String> users = new ArrayList<>();
+
+    private final List<Sender> senders = new ArrayList<>();
+    private final List<Receiver> receivers = new ArrayList<>();
 
     public Channel(ChannelType type, Material material, String name, String ownerUUID, String password) {
         this.type = type;
@@ -44,6 +47,10 @@ public class Channel {
 
     public List<Receiver> getReceivers() {
         return receivers;
+    }
+
+    public List<String> getUsers() {
+        return users;
     }
 
     public ChannelType type() {
@@ -86,12 +93,28 @@ public class Channel {
         receivers.add(receiver);
     }
 
+    public void addUser(String uuid) {
+        users.add(uuid);
+    }
+
+    public void addUser(Player player) {
+        users.add(player.getUniqueId().toString());
+    }
+
     public void removeSender(Sender sender) {
         senders.remove(sender);
     }
 
     public void removeReceiver(Receiver receiver) {
         receivers.remove(receiver);
+    }
+
+    public void removeUser(String uuid) {
+        users.remove(uuid);
+    }
+
+    public void removeUser(Player player) {
+        users.remove(player.getUniqueId().toString());
     }
 
     public boolean isPublic() {
@@ -112,5 +135,16 @@ public class Channel {
 
     public boolean isPassword(String password) {
         return Utils.verifyHash(password, this.password);
+    }
+
+    public List<String> getLore() {
+        List<String> lore = new ArrayList<>();
+        lore.add("§7Type: §e" + type.getTranslation());
+        lore.add("§7Name: §e" + name);
+        lore.add("§7Owner: §e" + ownerUUID);
+        lore.add("§7Can be used by: §e" + users.size());
+        lore.add("§7Active Senders: §e" + senders.size());
+        lore.add("§7Active Receivers: §e" + receivers.size());
+        return lore;
     }
 }
