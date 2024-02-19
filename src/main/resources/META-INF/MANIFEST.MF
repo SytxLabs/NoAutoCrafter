@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Main-Class: 
+Class-Path: jbcrypt-0.4.jar jackson-annotations-2.15.1.jar jackson-datab
+ ind-2.15.1.jar json-20231013.jar jackson-core-2.15.1.jar
+

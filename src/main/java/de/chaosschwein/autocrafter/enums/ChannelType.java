@@ -4,18 +4,13 @@ import de.chaosschwein.autocrafter.main.AutoMain;
 import org.bukkit.Material;
 
 public enum ChannelType {
-    Private("channel_type.private", Material.RED_DYE),
-    Protected("channel_type.protected", Material.YELLOW_DYE),
-    Public("channel_type.public", Material.WHITE_DYE);
-    private final String translationKey;
+    Private(AutoMain.language.ChannelTypePrivate, Material.RED_DYE),
+    Public(AutoMain.language.ChannelTypePublic, Material.WHITE_DYE);
+    public final String translatedName;
     public final Material material;
 
-    ChannelType(String translationKey, Material material) {
-        this.translationKey = translationKey;
+    ChannelType(String translatedName, Material material) {
+        this.translatedName = translatedName;
         this.material = material;
-    }
-
-    public String getTranslation() {
-        return AutoMain.language.fileManager.read(translationKey);
     }
 }

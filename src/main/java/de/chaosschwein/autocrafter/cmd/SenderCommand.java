@@ -15,7 +15,7 @@ import java.util.HashMap;
 
 public class SenderCommand implements CommandExecutor {
 
-    public static final HashMap<Player, Block> sender = new HashMap<>();
+    public static final HashMap<String, Block> sender = new HashMap<>();
 
     @SuppressWarnings("NullableProblems")
     @Override
@@ -34,7 +34,7 @@ public class SenderCommand implements CommandExecutor {
             Message msg = new Message(p);
             if (new CheckBlocks(block).isSender()) {
                 if (!AutoMain.transporter.isSender(block.getLocation())) {
-                    SenderCommand.sender.put(p, block);
+                    SenderCommand.sender.put(p.getUniqueId().toString(), block);
                     new InventoryCreator(p).openSender();
                 } else {
                     msg.send(AutoMain.language.SenderAlreadyExists);

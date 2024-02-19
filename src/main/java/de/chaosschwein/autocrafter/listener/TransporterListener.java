@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.inventory.Inventory;
@@ -177,6 +178,28 @@ public class TransporterListener implements Listener {
                 Utils.removeItem(event.getClickedInventory(), item.getType(), item.getAmount());
             }, 2L);
         }
+    }
+
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent e) {
+        if (AutoMain.transporter.isSender(e.getBlock().getLocation())) {
+            AutoMain.transporter.removeSender(e.getBlock().getLocation());
+        }
+        if (AutoMain.transporter.isReceiver(e.getBlock().getLocation())) {
+            AutoMain.transporter.removeReceiver(e.getBlock().getLocation());
+        }
+    }
+
+    @EventHandler
+    public void onBlockExplode(EntityExplodeEvent e) {
+        e.blockList().forEach(block -> {
+            if (AutoMain.transporter.isSender(block.getLocation())) {
+                AutoMain.transporter.removeSender(block.getLocation());
+            }
+            if (AutoMain.transporter.isReceiver(block.getLocation())) {
+                AutoMain.transporter.removeReceiver(block.getLocation());
+            }
+        });
     }
 
 

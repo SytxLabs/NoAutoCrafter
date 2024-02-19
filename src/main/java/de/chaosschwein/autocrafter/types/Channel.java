@@ -33,6 +33,10 @@ public class Channel {
         return receivers;
     }
 
+    public List<Sender> getSenders() {
+        return senders;
+    }
+
     public List<String> getUsers() {
         return users;
     }
@@ -58,9 +62,10 @@ public class Channel {
     }
 
     public String getHash(boolean hashPassword) {
+        //noinspection SwitchStatementWithTooFewBranches
         return switch (type) {
             case Public -> name + type.name() + material.name();
-            case Protected -> hashPassword ? name + type.name() + material.name() + Utils.hash(password) : name + type.name() + material.name() + password;
+            //case Protected -> hashPassword ? name + type.name() + material.name() + Utils.hash(password) : name + type.name() + material.name() + password;
             default -> name + ownerUUID + type.name() + material.name();
         };
     }
@@ -79,6 +84,9 @@ public class Channel {
 
     public void addUser(String uuid) {
         users.add(uuid);
+    }
+    public void removeUser(String uuid) {
+        users.remove(uuid);
     }
 
     public void removeSender(Sender sender) {
@@ -111,8 +119,7 @@ public class Channel {
 
     public List<String> getLore() {
         List<String> lore = new ArrayList<>();
-        lore.add("§7Type: §e" + type.getTranslation());
-        lore.add("§7Name: §e" + name);
+        lore.add("§7Type: §e" + type.translatedName);
         lore.add("§7Owner: §e" + ownerUUID);
         lore.add("§7Can be used by: §e" + users.size());
         lore.add("§7Active Senders: §e" + senders.size());

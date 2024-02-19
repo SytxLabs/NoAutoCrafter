@@ -8,8 +8,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -57,11 +55,11 @@ public class InventoryCreator {
             fillInv(inv);
             if (channel != null) {
                 selectedChannel = channel;
-                inv.setItem(12, new ItemBuilder(channel.material).setName(channel.name).build());
+                inv.setItem(12, new ItemBuilder(channel.material).setName(AutoMain.language.InventorySelectChannel).setLore(channel.getLore()).build());
             } else {
                 inv.setItem(12, new ItemBuilder(Material.BARRIER).setName(AutoMain.language.InventorySelectChannel).build());
             }
-            inv.setItem(14, new ItemBuilder(SenderType.Random.material).setName(SenderType.Random.getTranslation()).build());
+            inv.setItem(14, new ItemBuilder(SenderType.Random.material).setName(SenderType.Random.translatedName).build());
             inv.setItem(20, new ItemBuilder(Material.RED_CONCRETE).setName(AutoMain.language.InventoryBack).build());
             inv.setItem(22, new ItemBuilder(Material.BOOK).setName(AutoMain.language.InventoryAddItem).setLore(AutoMain.language.InventoryAddItemLore).build());
             inv.setItem(24, new ItemBuilder(Material.LIME_CONCRETE).setName(AutoMain.language.InventoryCreateSender).build());
@@ -93,10 +91,15 @@ public class InventoryCreator {
         if (page < 1) {
             player.closeInventory();
         }
+        if (maxPage == 0) {
+            maxPage = 1;
+        }
         if (page > maxPage) {
             page = maxPage;
         }
-        channels = channels.stream().skip((page - 1) * 36L).limit(36).toList();
+        if (!channels.isEmpty()) {
+            channels = channels.stream().skip((page - 1) * 36L).limit(36).toList();
+        }
         channelViewerPage = page;
         channelViewerChannelMax = channels.size();
         int invSize = channels.isEmpty() ? 18 : (channels.size() % 9 == 0 ? channels.size() : channels.size() + (9 - channels.size() % 9)) + 9;
@@ -135,18 +138,6 @@ public class InventoryCreator {
         player.openInventory(inv);
     }
 
-    public void openPasswordChannel(Channel channel) {
-        if (player == null) {
-            return;
-        }
-        selectedChannel = channel;
-        final Inventory anvilInventory = Bukkit.createInventory(player, InventoryType.ANVIL, "§d§lChannelPassword");
-        AnvilInventory anvil = (AnvilInventory) anvilInventory;
-        anvil.setItem(0, new ItemBuilder(Material.PAPER).setName("§ePassword").build());
-        anvil.setMaximumRepairCost(0);
-        player.openInventory(anvil);
-    }
-
     public void openCreateChannel() {
         if (player == null) {
             return;
@@ -155,7 +146,7 @@ public class InventoryCreator {
         Inventory inv = Bukkit.createInventory(null, 36, "§d§lCreateChannel");
         fillInv(inv);
         inv.setItem(12, null);
-        inv.setItem(14, new ItemBuilder(ChannelType.Private.material).setName(ChannelType.Private.getTranslation()).build());
+        inv.setItem(14, new ItemBuilder(ChannelType.Private.material).setName(ChannelType.Private.translatedName).build());
         inv.setItem(20, new ItemBuilder(Material.RED_CONCRETE).setName(AutoMain.language.InventoryBack).build());
         inv.setItem(22, new ItemBuilder(Material.BOOK).setName(AutoMain.language.InventoryAddItem).setLore(AutoMain.language.InventoryAddItemLore).build());
         inv.setItem(24, new ItemBuilder(Material.LIME_CONCRETE).setName(AutoMain.language.InventoryCreateChannel).build());
@@ -171,7 +162,7 @@ public class InventoryCreator {
         fillInv(inv);
         inv.setItem(12, new ItemBuilder(Material.BARRIER).setName(AutoMain.language.InventoryDeleteChannel).build());
         inv.setItem(14, new ItemBuilder(Material.LIME_DYE).setName(AutoMain.language.InventoryUseChannel).build());
-        inv.setItem(20, new ItemBuilder(Material.RED_CONCRETE).setName(AutoMain.language.InventoryBack).build());
+        inv.setItem(18, new ItemBuilder(Material.RED_CONCRETE).setName(AutoMain.language.InventoryBack).build());
         player.openInventory(inv);
     }
 }

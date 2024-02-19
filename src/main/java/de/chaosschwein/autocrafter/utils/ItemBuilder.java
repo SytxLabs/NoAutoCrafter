@@ -34,13 +34,6 @@ public class ItemBuilder {
         this.meta = item.getItemMeta();
     }
 
-    public ItemBuilder(Material material, int amount, short damage) {
-        this.material = material;
-        //noinspection deprecation
-        this.item = new ItemStack(material, amount, damage);
-        this.meta = item.getItemMeta();
-    }
-
     public ItemBuilder setName(String name) {
         this.meta.setDisplayName(name);
         this.item.setItemMeta(meta);

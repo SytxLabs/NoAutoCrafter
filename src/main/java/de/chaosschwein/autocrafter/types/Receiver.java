@@ -2,11 +2,13 @@ package de.chaosschwein.autocrafter.types;
 
 import de.chaosschwein.autocrafter.utils.CheckBlocks;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 
 public class Receiver implements Comparable<Receiver> {
+    public Location location = null;
 
-    private Chest chest = null;
+    private Block chest = null;
 
     private Channel channel = null;
     public boolean isReceiver = false;
@@ -18,18 +20,15 @@ public class Receiver implements Comparable<Receiver> {
         if (!(new CheckBlocks(chest.getBlock())).isReceiver()) {
             return;
         }
-        this.chest = (Chest) chest.getBlock().getState();
+
+        this.location = chest;
+        this.chest = chest.getBlock();
         this.channel = channel;
         this.idInChannel = idInChannel;
         this.isReceiver = true;
     }
 
-    public Receiver(Location chest, Channel channel) {
-        Receiver last = channel.getReceivers().stream().sorted().toList().get(channel.getReceivers().size() - 1);
-        new Receiver(chest, channel, last.getIdInChannel() + 1);
-    }
-
-    public Chest getChest() {
+    public Block getChest() {
         return chest;
     }
 

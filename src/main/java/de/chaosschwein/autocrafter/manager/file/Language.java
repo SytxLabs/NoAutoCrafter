@@ -42,6 +42,16 @@ public class Language {
     public final String ChannelNotFound;
     public final String ChannelAlreadyExists;
 
+    public final String ChannelTypePrivate;
+    public final String ChannelTypeProtected;
+    public final String ChannelTypePublic;
+
+    public final String SenderTypeRoundRobin;
+    public final String SenderTypeRandom;
+    public final String SenderTypeOverflow;
+
+    public final String WrongPassword;
+
     public final FileManager fileManager;
 
     public Language() {
@@ -85,6 +95,16 @@ public class Language {
 
         ChannelNotFound = fileManager.read("channel.notFound");
         ChannelAlreadyExists = fileManager.read("channel.alreadyExists");
+
+        ChannelTypePrivate = fileManager.read("channel_type.private");
+        ChannelTypeProtected = fileManager.read("channel_type.protected");
+        ChannelTypePublic = fileManager.read("channel_type.public");
+
+        SenderTypeRoundRobin = fileManager.read("sender_type.round_robin");
+        SenderTypeRandom = fileManager.read("sender_type.random");
+        SenderTypeOverflow = fileManager.read("sender_type.overflow");
+
+        WrongPassword = fileManager.read("wrongPassword");
     }
 
     public void setDefault() {
@@ -134,8 +154,10 @@ public class Language {
             put("sender_type.overflow", "&7Overflow");
 
             put("channel_type.private", "&7Private");
-            put("sender_policy_type.protected", "&7Protected");
-            put("sender_policy_type.public", "&7Public");
+            put("channel_type.protected", "&7Protected");
+            put("channel_type.public", "&7Public");
+
+            put("wrongPassword", "&cDas Passwort ist falsch!");
         }});
     }
 }

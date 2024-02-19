@@ -4,19 +4,15 @@ import de.chaosschwein.autocrafter.main.AutoMain;
 import org.bukkit.Material;
 
 public enum SenderType {
-    RoundRobin("sender_type.round_robin", Material.PINK_DYE),
-    Random("sender_type.random", Material.BLACK_DYE),
-    Overflow("sender_type.overflow", Material.RED_DYE);
+    RoundRobin(AutoMain.language.SenderTypeRoundRobin, Material.PINK_DYE),
+    Random(AutoMain.language.SenderTypeRandom, Material.BLACK_DYE),
+    Overflow(AutoMain.language.SenderTypeOverflow, Material.RED_DYE);
 
-    private final String translationKey;
+    public final String translatedName;
     public final Material material;
 
-    SenderType(String translationKey, Material material) {
-        this.translationKey = translationKey;
+    SenderType(String translatedName, Material material) {
+        this.translatedName = translatedName;
         this.material = material;
-    }
-
-    public String getTranslation() {
-        return AutoMain.language.fileManager.read(translationKey);
     }
 }

@@ -47,17 +47,26 @@ public class Sender {
 
     public boolean moveItems(ItemStack item) {
         List<Receiver> receivers = channel.getReceivers();
-        Receiver receiver = switch (type) {
-            case Random -> receivers.get((new Random()).nextInt(0, receivers.size()));
-            case Overflow -> receivers.stream().filter(r -> !Utils.hasNotEnoughPlace(r.getChest().getBlockInventory(), item)).sorted().toList().get(0);
-            case RoundRobin -> getRoundRobinReceiver(item);
-        };
-        if (receiver == null || Utils.hasNotEnoughPlace(receiver.getChest().getBlockInventory(), item)) {
+        Receiver receiver;
+        if (receivers.size() < 2) {
+            if (receivers.isEmpty()) {
+                return true;
+            }
+            receiver = receivers.get(0);
+        } else {
+            receiver = switch (type) {
+                case Random -> receivers.get((new Random()).nextInt(0, receivers.size()));
+                case Overflow -> receivers.stream().filter(r -> !Utils.hasNotEnoughPlace(((Chest)r.getChest().getState()).getBlockInventory(), item)).sorted().toList().get(0);
+                case RoundRobin -> getRoundRobinReceiver(item);
+            };
+        }
+        if (receiver == null || Utils.hasNotEnoughPlace(((Chest)receiver.getChest().getState()).getBlockInventory(), item)) {
             return true;
         }
-        receiver.getChest().getBlockInventory().addItem(item);
-        receiver.getChest().update();
-        receiver.getChest().getBlockInventory().getViewers().forEach(player -> {
+        System.out.println("Receiver: " + receiver.getIdInChannel());
+        ((Chest)receiver.getChest().getState()).getBlockInventory().addItem(item);
+        receiver.getChest().getState().update();
+        ((Chest)receiver.getChest().getState()).getBlockInventory().getViewers().forEach(player -> {
             if (player instanceof Player) {
                 try {
                     //noinspection UnstableApiUsage
@@ -70,23 +79,22 @@ public class Sender {
     }
 
     private Receiver getRoundRobinReceiver(ItemStack item) {
+        System.out.println("RoundRobin");
         Receiver receiver;
-        lastIdFromChannel++;
         List<Receiver> receivers = channel.getReceivers();
-        if (lastIdFromChannel >= receivers.size()) {
-            lastIdFromChannel = 0;
+        if (lastIdFromChannel >= receivers.size() + 1) {
+            lastIdFromChannel = 1;
         }
-        List<Receiver> validReceiver = receivers.stream().filter(r -> !Utils.hasNotEnoughPlace(r.getChest().getBlockInventory(), item)).sorted().toList();
+        List<Receiver> validReceiver = receivers.stream().filter(r -> !Utils.hasNotEnoughPlace(((Chest)r.getChest().getState()).getBlockInventory(), item)).sorted().toList();
         Optional<Receiver> or; Receiver receiver1;
         if (validReceiver.stream().noneMatch(r -> r.getIdInChannel() == lastIdFromChannel)) {
             or = validReceiver.stream().findFirst();
-            receiver1 = validReceiver.get(0);
         } else {
             or = validReceiver.stream().filter(r -> r.getIdInChannel() == lastIdFromChannel).findFirst();
-            receiver1 = validReceiver.get(0);
         }
+        receiver1 = validReceiver.get(0);
         receiver = or.orElse(receiver1);
-        lastIdFromChannel = receiver.getIdInChannel();
+        lastIdFromChannel = receiver.getIdInChannel() + 1;
         return receiver;
     }
 
@@ -95,6 +103,6 @@ public class Sender {
         if (receivers.isEmpty()) {
             return true;
         }
-        return receivers.stream().filter(r -> !Utils.hasNotEnoughPlace(r.getChest().getBlockInventory(), item)).toList().isEmpty();
+        return receivers.stream().filter(r -> !Utils.hasNotEnoughPlace(((Chest)r.getChest().getState()).getBlockInventory(), item)).toList().isEmpty();
     }
 }

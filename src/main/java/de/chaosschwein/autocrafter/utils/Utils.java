@@ -133,6 +133,20 @@ public class Utils {
         });
     }
 
+    public static void addItem(Inventory inventory, ItemStack i) {
+        if (inventory == null) {
+            return;
+        }
+        inventory.addItem(i);
+        inventory.getViewers().forEach(player -> {
+            try {
+                //noinspection UnstableApiUsage
+                ((Player) player).updateInventory();
+            } catch (Exception ignored) {
+            }
+        });
+    }
+
     public static boolean hasNotEnoughPlace(Inventory inventory, Material material, int amount) {
         int freeSlots = 0;
         for (ItemStack itemStack : inventory.getContents()) {

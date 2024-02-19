@@ -5,6 +5,7 @@ import de.chaosschwein.autocrafter.utils.CheckBlocks;
 import de.chaosschwein.autocrafter.utils.InventoryCreator;
 import de.chaosschwein.autocrafter.utils.Message;
 import de.chaosschwein.autocrafter.utils.Utils;
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -15,7 +16,7 @@ import java.util.HashMap;
 
 public class ReceiverCommand implements CommandExecutor {
 
-    public static final HashMap<Player, Block> receiver = new HashMap<>();
+    public static final HashMap<String, Location> receiver = new HashMap<>();
 
     @SuppressWarnings("NullableProblems")
     @Override
@@ -34,7 +35,7 @@ public class ReceiverCommand implements CommandExecutor {
             Message msg = new Message(p);
             if (new CheckBlocks(block).isReceiver()) {
                 if (!AutoMain.transporter.isReceiver(block.getLocation())) {
-                    receiver.put(p, block);
+                    receiver.put(p.getUniqueId().toString(), block.getLocation());
                     new InventoryCreator(p).openChannelViewer();
                 } else {
                     msg.send(AutoMain.language.ReceiverAlreadyExists);
@@ -42,9 +43,7 @@ public class ReceiverCommand implements CommandExecutor {
             } else {
                 msg.send(AutoMain.language.ReceiverIsFalse);
             }
-
-            return true;
         }
-        return false;
+        return true;
     }
 }

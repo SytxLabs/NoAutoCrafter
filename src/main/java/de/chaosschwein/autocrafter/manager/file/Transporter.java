@@ -76,6 +76,10 @@ public class Transporter {
         file.remove("Channel." + hash + ".Password");
         file.remove("Channel." + hash + ".Users");
         file.remove("Channel." + hash);
+
+        channel.getReceivers().forEach(receiver -> removeReceiver(receiver.getChest().getLocation()));
+        channel.getSenders().forEach(sender -> removeSender(sender.getChest().getLocation()));
+
         channels.remove(hash);
     }
 
@@ -146,16 +150,15 @@ public class Transporter {
         file.remove("Sender." + locString + ".PolicyType");
         file.remove("Sender." + locString + ".Channel");
         file.remove("Sender." + locString);
-        senders.remove(loc);
         Channel channel = channels.get(senders.get(loc).getChannel().getHash());
         if (channel != null) {
             channel.removeSender(senders.get(loc));
         }
+        senders.remove(loc);
     }
 
     public void addReceiver(Receiver receiver) {
-        if (!receiver.isReceiver) return;
-        String locString = file.locToString(receiver.getChest().getLocation());
+        String locString = file.locToString(receiver.location);
         file.write("Receiver." + locString + ".Channel", receiver.getChannel().getHash());
         file.write("Receiver." + locString + ".IdInChannel", receiver.getIdInChannel());
         receivers.put(receiver.getChest().getLocation(), receiver);
@@ -170,11 +173,11 @@ public class Transporter {
         String locString = file.locToString(loc);
         file.remove("Receiver." + locString + ".Channel");
         file.remove("Receiver." + locString);
-        receivers.remove(loc);
         Channel channel = channels.get(receivers.get(loc).getChannel().getHash());
         if (channel != null) {
             channel.removeReceiver(receivers.get(loc));
         }
+        receivers.remove(loc);
     }
 
     public boolean isSender(Location loc) {

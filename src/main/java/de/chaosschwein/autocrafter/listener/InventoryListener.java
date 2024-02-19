@@ -14,30 +14,28 @@ import de.chaosschwein.autocrafter.types.Sender;
 import de.chaosschwein.autocrafter.utils.InventoryCreator;
 import de.chaosschwein.autocrafter.utils.ItemBuilder;
 import de.chaosschwein.autocrafter.utils.Message;
-import de.chaosschwein.autocrafter.utils.Utils;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 public class InventoryListener implements Listener {
 
     public static List<String> functions = new ArrayList<>() {{
         add("§d§lAutoCrafter");
-        add("§d§lChannelViewer");
         add("§d§lAddChannel");
         add("§d§lCreateChannel");
-        add("§d§lChannelPassword");
         add("§d§lSender");
     }};
 
@@ -50,29 +48,28 @@ public class InventoryListener implements Listener {
         Inventory inv = e.getClickedInventory();
         ItemStack item = e.getCurrentItem();
         Message msg = new Message(p);
-        if (item == null || item.getType() == Material.AIR || title.isEmpty() || !item.hasItemMeta() || item.getItemMeta() == null) {
+        if (inv == null || item == null || item.getType() == Material.AIR || (!item.hasItemMeta() || item.getItemMeta() == null)) {
             return;
         }
-        if (inv == null) {
+        if (!functions.contains(title) && !title.startsWith("§d§lChannel: ") && !title.startsWith("§d§lChannelViewer")) {
             return;
         }
-        if (!functions.contains(title) && !title.startsWith("§d§lChannel: ")) {
+        String itemName = Objects.requireNonNull(item.getItemMeta()).getDisplayName();
+        if (e.getClickedInventory() != p.getOpenInventory().getTopInventory()) {
             return;
         }
-        String itemName = item.getItemMeta().getDisplayName();
         e.setCancelled(true);
         if (item.getType() == Material.GRAY_STAINED_GLASS_PANE && itemName.equals("§e")) {
-            return;
-        }if (e.getClickedInventory() != p.getOpenInventory().getTopInventory()) {
             return;
         }
         switch (title) {
             case "§d§lAutoCrafter" -> onInventoryAutoCraftClick(e, p, item, msg);
-            case "§d§lChannelViewer" -> onInventoryChannelViewerClick(p, item, itemName);
             case "§d§lAddChannel" -> onInventoryAddChannelClick(p, inv, msg, itemName);
-            case "§d§lChannelPassword" -> onInventoryChannelPasswordClick(p, inv, msg);
             case "§d§lCreateChannel" -> onInventoryCreateChannelClick(p, inv, msg, itemName);
-            case "§d§lSender" -> onInventorySenderClick(p, inv, item, msg, itemName);
+            case "§d§lSender" -> onInventorySenderClick(p, inv, msg, itemName);
+        }
+        if (title.startsWith("§d§lChannelViewer")) {
+            onInventoryChannelViewerClick(p, item, itemName);
         }
         if (title.startsWith("§d§lChannel: ")) {
             onInventoryChannelClick(p, itemName);
@@ -127,7 +124,6 @@ public class InventoryListener implements Listener {
     }
 
     public void onInventoryAddChannelClick(Player p, Inventory inv, Message msg, String itemName) {
-        InventoryCreator inventoryCreator = InventoryCreator.getInstance(p);
         if (itemName.equals(AutoMain.language.InventoryBack)) {
             p.closeInventory();
             return;
@@ -145,12 +141,13 @@ public class InventoryListener implements Listener {
             }
             String finalChannelName = channelName;
             List<Channel> channels = AutoMain.transporter.channels.values().stream().filter(channel -> channel.material == i.getType() && channel.name.equals(finalChannelName) &&
-                    (channel.type == ChannelType.Protected || channel.type == ChannelType.Public) &&
+                    (channel.type == ChannelType.Public) &&
                     !(channel.getUsers().contains(p.getUniqueId().toString()) || channel.isOwner(p.getUniqueId().toString()))).toList();
             if (channels.isEmpty()) {
                 msg.send(AutoMain.language.ChannelNotFound);
                 return;
             }
+            p.getInventory().addItem(i);
             Channel channel = channels.get(0);
             if (channel.isPublic()) {
                 channel.addUser(p.getUniqueId().toString());
@@ -159,25 +156,15 @@ public class InventoryListener implements Listener {
                 p.closeInventory();
                 useChannelForReceiver(p);
                 useChannelForSender(p, channel);
-                return;
-            }
-            if (channel.isProtected()) {
-                p.closeInventory();
-                inventoryCreator.openPasswordChannel(channel);
             }
         }
     }
 
-    @SuppressWarnings("UnstableApiUsage")
     public void onInventoryCreateChannelClick(Player p, Inventory inv, Message msg, String itemName) {
         InventoryCreator inventoryCreator = InventoryCreator.getInstance(p);
         if (itemName.equals(AutoMain.language.InventoryBack)) {
             inventoryCreator.openChannelViewer();
             return;
-        }
-        if (itemName.equals(AutoMain.language.InventoryCreateChannel)) {
-            p.closeInventory();
-            inventoryCreator.openCreateChannel();
         }
         ItemStack typeItem = inv.getItem(14);
         if (typeItem == null || typeItem.getType() == Material.AIR || !typeItem.hasItemMeta() || typeItem.getItemMeta() == null) {
@@ -185,7 +172,6 @@ public class InventoryListener implements Listener {
         }
         ChannelType type = switch (typeItem.getType()) {
             case WHITE_DYE -> ChannelType.Public;
-            case YELLOW_DYE -> ChannelType.Protected;
             case RED_DYE -> ChannelType.Private;
             default -> null;
         };
@@ -194,13 +180,13 @@ public class InventoryListener implements Listener {
         }
         if (itemName.equals(typeItem.getItemMeta().getDisplayName())) {
             if (type == ChannelType.Private) {
-                inv.setItem(14, new ItemBuilder(ChannelType.Protected.material).setName(ChannelType.Protected.getTranslation()).build());
-            } else if (type == ChannelType.Protected) {
-                inv.setItem(14, new ItemBuilder(ChannelType.Public.material).setName(ChannelType.Public.getTranslation()).build());
+                inv.setItem(14, new ItemBuilder(ChannelType.Public.material).setName(ChannelType.Public.translatedName).build());
             } else {
-                inv.setItem(14, new ItemBuilder(ChannelType.Private.material).setName(ChannelType.Private.getTranslation()).build());
+                inv.setItem(14, new ItemBuilder(ChannelType.Private.material).setName(ChannelType.Private.translatedName).build());
             }
-            p.updateInventory();
+            return;
+        }
+        if (!itemName.equals(AutoMain.language.InventoryCreateChannel)) {
             return;
         }
         ItemStack i = inv.getItem(12);
@@ -220,50 +206,14 @@ public class InventoryListener implements Listener {
             msg.send(AutoMain.language.ChannelAlreadyExists);
             return;
         }
+        p.getInventory().addItem(i);
         Channel channel = new Channel(type, i.getType(), channelName, p.getUniqueId().toString(), "");
-        if (type == ChannelType.Protected) {
-            p.closeInventory();
-            inventoryCreator.openPasswordChannel(channel);
-        } else {
-            channel.addUser(p.getUniqueId().toString());
-            channel.save();
-            msg.send(AutoMain.language.InventoryUseChannel);
-            p.closeInventory();
-            useChannelForReceiver(p);
-            useChannelForSender(p, channel);
-        }
-    }
-
-    public void onInventoryChannelPasswordClick(Player p, Inventory inv, Message msg) {
-        InventoryCreator inventoryCreator = InventoryCreator.getInstance(p);
-        if (inventoryCreator.selectedChannel == null) {
-            p.closeInventory();
-            return;
-        }
-        AnvilInventory anvil = (AnvilInventory) inv;
-        String password = anvil.getRenameText();
-        if (password == null) {
-            return;
-        }
-        Channel channel = inventoryCreator.selectedChannel;
-        if (inventoryCreator.isCreatingChannel && channel.password().isEmpty()) {
-            channel.setPassword(password);
-            channel.addUser(p.getUniqueId().toString());
-            channel.save();
-            msg.send(AutoMain.language.InventoryUseChannel);
-            p.closeInventory();
-            useChannelForReceiver(p);
-            useChannelForSender(p, inventoryCreator.selectedChannel);
-            return;
-        }
-        if (channel.isPassword(Utils.hash(password))) {
-            channel.addUser(p.getUniqueId().toString());
-            channel.save();
-            msg.send(AutoMain.language.InventoryUseChannel);
-            p.closeInventory();
-            useChannelForReceiver(p);
-            useChannelForSender(p, inventoryCreator.selectedChannel);
-        }
+        channel.addUser(p.getUniqueId().toString());
+        channel.save();
+        msg.send(AutoMain.language.InventoryUseChannel);
+        p.closeInventory();
+        useChannelForReceiver(p);
+        useChannelForSender(p, channel);
     }
 
     public void onInventoryChannelClick(Player p, String itemName) {
@@ -274,7 +224,13 @@ public class InventoryListener implements Listener {
             return;
         }
         if (itemName.equals(AutoMain.language.InventoryDeleteChannel)) {
-            inventoryCreator.selectedChannel.delete();
+            if (Objects.equals(inventoryCreator.selectedChannel.ownerUUID, p.getUniqueId().toString())) {
+                inventoryCreator.selectedChannel.delete();
+            } else {
+                inventoryCreator.selectedChannel.removeUser(p.getUniqueId().toString());
+                inventoryCreator.selectedChannel.save();
+            }
+            p.closeInventory();
             inventoryCreator.openChannelViewer();
             return;
         }
@@ -284,18 +240,15 @@ public class InventoryListener implements Listener {
         }
     }
 
-    @SuppressWarnings("UnstableApiUsage")
-    public void onInventorySenderClick(Player p, Inventory inv, ItemStack item, Message msg, String itemName) {
+    public void onInventorySenderClick(Player p, Inventory inv, Message msg, String itemName) {
         if (itemName.equals(AutoMain.language.InventoryBack)) {
             p.closeInventory();
             return;
         }
-        ItemStack channelItem = inv.getItem(12);
-        if (channelItem == null || channelItem.getType() == Material.AIR) {
-            return;
-        }
-        if (channelItem == item) {
+        if (itemName.equals(AutoMain.language.InventorySelectChannel)) {
+            p.closeInventory();
             InventoryCreator.getInstance(p).openChannelViewer();
+            return;
         }
         ItemStack typeItem = inv.getItem(14);
         if (typeItem == null || typeItem.getType() == Material.AIR || !typeItem.hasItemMeta() || typeItem.getItemMeta() == null) {
@@ -312,13 +265,12 @@ public class InventoryListener implements Listener {
         }
         if (itemName.equals(typeItem.getItemMeta().getDisplayName())) {
             if (type == SenderType.Overflow) {
-                inv.setItem(14, new ItemBuilder(SenderType.RoundRobin.material).setName(SenderType.RoundRobin.getTranslation()).build());
+                inv.setItem(14, new ItemBuilder(SenderType.RoundRobin.material).setName(SenderType.RoundRobin.translatedName).build());
             } else if (type == SenderType.Random) {
-                inv.setItem(14, new ItemBuilder(SenderType.Overflow.material).setName(SenderType.Overflow.getTranslation()).build());
+                inv.setItem(14, new ItemBuilder(SenderType.Overflow.material).setName(SenderType.Overflow.translatedName).build());
             } else {
-                inv.setItem(14, new ItemBuilder(SenderType.Random.material).setName(SenderType.Random.getTranslation()).build());
+                inv.setItem(14, new ItemBuilder(SenderType.Random.material).setName(SenderType.Random.translatedName).build());
             }
-            p.updateInventory();
             return;
         }
         InventoryCreator inventoryCreator = InventoryCreator.getInstance(p);
@@ -326,11 +278,11 @@ public class InventoryListener implements Listener {
             msg.send(AutoMain.language.InventoryNoChannel);
             return;
         }
-        if (!SenderCommand.sender.containsKey(p)) {
+        if (!SenderCommand.sender.containsKey(p.getUniqueId().toString())) {
             p.closeInventory();
             return;
         }
-        Block block = SenderCommand.sender.get(p);
+        Block block = SenderCommand.sender.get(p.getUniqueId().toString());
         if (AutoMain.transporter.isSender(block.getLocation())) {
             msg.send(AutoMain.language.SenderAlreadyExists);
             p.closeInventory();
@@ -338,13 +290,13 @@ public class InventoryListener implements Listener {
         }
         Sender sender = new Sender(block.getLocation(), type, inventoryCreator.selectedChannel);
         AutoMain.transporter.addSender(sender);
-        SenderCommand.sender.remove(p);
+        SenderCommand.sender.remove(p.getUniqueId().toString());
         p.closeInventory();
         msg.send(AutoMain.language.SenderCreated);
     }
 
-    private void useChannelForReceiver(Player p) {
-        if (!ReceiverCommand.receiver.containsKey(p)) {
+    public static void useChannelForReceiver(Player p) {
+        if (!ReceiverCommand.receiver.containsKey(p.getUniqueId().toString())) {
             return;
         }
         InventoryCreator inventoryCreator = InventoryCreator.getInstance(p);
@@ -353,14 +305,22 @@ public class InventoryListener implements Listener {
             new InventoryCreator(p).openChannelViewer();
             return;
         }
-        Block block = ReceiverCommand.receiver.get(p);
-        Receiver receiver = new Receiver(block.getLocation(), inventoryCreator.selectedChannel);
+        Location block = ReceiverCommand.receiver.get(p.getUniqueId().toString());
+        if (block == null) {
+            return;
+        }
+        int lastId = 0;
+        if (!AutoMain.transporter.receivers.isEmpty()) {
+            lastId = AutoMain.transporter.receivers.values().stream().mapToInt(Receiver::getIdInChannel).max().orElse(0);
+        }
+        Receiver receiver = new Receiver(block, inventoryCreator.selectedChannel, lastId + 1);
         AutoMain.transporter.addReceiver(receiver);
-        ReceiverCommand.receiver.remove(p);
+        ReceiverCommand.receiver.remove(p.getUniqueId().toString());
+        Message.send(p, AutoMain.language.ReceiverCreated);
     }
 
-    private void useChannelForSender(Player p, Channel channel) {
-        if (!SenderCommand.sender.containsKey(p)) {
+    public static void useChannelForSender(Player p, Channel channel) {
+        if (!SenderCommand.sender.containsKey(p.getUniqueId().toString())) {
             return;
         }
         InventoryCreator inventoryCreator = InventoryCreator.getInstance(p);
