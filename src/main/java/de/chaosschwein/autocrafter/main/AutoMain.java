@@ -3,9 +3,7 @@ package de.chaosschwein.autocrafter.main;
 import de.chaosschwein.autocrafter.cmd.AutoCommand;
 import de.chaosschwein.autocrafter.cmd.ReceiverCommand;
 import de.chaosschwein.autocrafter.cmd.SenderCommand;
-import de.chaosschwein.autocrafter.listener.CrafterListener;
-import de.chaosschwein.autocrafter.listener.FarmingStationListener;
-import de.chaosschwein.autocrafter.listener.InventoryListener;
+import de.chaosschwein.autocrafter.listener.*;
 import de.chaosschwein.autocrafter.manager.FileManager;
 import de.chaosschwein.autocrafter.manager.file.*;
 import de.chaosschwein.autocrafter.utils.Message;
@@ -30,6 +28,9 @@ public final class AutoMain extends JavaPlugin {
     public static boolean placer = true;
     public static boolean transport = true;
     public static boolean farming_station = true;
+    public static boolean breeder = true;
+    public static int breederRange = 3;
+    public static boolean entityInteractor = true;
 
     public static AutoMain instance;
 
@@ -53,6 +54,9 @@ public final class AutoMain extends JavaPlugin {
             put("placer", true);
             put("transport", true);
             put("farming_station", true);
+            put("entity_interactor", true);
+            put("breeder.enable", true);
+            put("breeder.range", 3);
         }});
         prefix = config.read("prefix");
         crafter = (boolean) config.read("crafter", true);
@@ -60,11 +64,18 @@ public final class AutoMain extends JavaPlugin {
         placer = (boolean) config.read("placer", true);
         transport = (boolean) config.read("transport", true);
         farming_station = (boolean) config.read("farming_station", true);
+        entityInteractor = (boolean) config.read("entity_interactor", true);
+        breeder = (boolean) config.read("breeder.enable", true);
+        breederRange = (int) config.read("breeder.range", true);
 
 
         Bukkit.getPluginManager().registerEvents(new CrafterListener(), this);
         Bukkit.getPluginManager().registerEvents(new InventoryListener(), this);
         Bukkit.getPluginManager().registerEvents(new FarmingStationListener(), this);
+        Bukkit.getPluginManager().registerEvents(new TransporterListener(), this);
+        Bukkit.getPluginManager().registerEvents(new BreederListener(), this);
+        Bukkit.getPluginManager().registerEvents(new EntityInteractiorListener(), this);
+        Bukkit.getPluginManager().registerEvents(new PlacerListener(), this);
 
         new CrafterFile().cache();
         Objects.requireNonNull(getCommand("autocrafter")).setExecutor(new AutoCommand());

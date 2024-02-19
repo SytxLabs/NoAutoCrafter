@@ -175,6 +175,7 @@ public class CheckBlocks {
         return false;
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean isBreeder() {
         Block b = this.block;
         Location loc = b.getLocation();

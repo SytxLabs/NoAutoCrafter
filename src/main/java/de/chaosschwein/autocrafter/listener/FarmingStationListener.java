@@ -115,6 +115,7 @@ public class FarmingStationListener implements Listener {
                                 Utils.removeItem(dispenser, finalItem.getType(), 1);
                                 dispenser.update();
                             }
+                            f.blinkLamp();
                         }, 5);
                     }
                 }

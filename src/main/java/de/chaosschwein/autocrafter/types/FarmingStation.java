@@ -1,5 +1,6 @@
 package de.chaosschwein.autocrafter.types;
 
+import de.chaosschwein.autocrafter.main.AutoMain;
 import de.chaosschwein.autocrafter.utils.CheckBlocks;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -98,5 +99,15 @@ public class FarmingStation {
             return progress <= 0;
         }
         return false;
+    }
+
+    public void blinkLamp() {
+        Lightable lightable = (Lightable) lamp.getBlockData();
+        lightable.setLit(true);
+        lamp.setBlockData(lightable);
+        AutoMain.instance.getServer().getScheduler().runTaskLater(AutoMain.instance, () -> {
+            lightable.setLit(false);
+            lamp.setBlockData(lightable);
+        }, 20L);
     }
 }
