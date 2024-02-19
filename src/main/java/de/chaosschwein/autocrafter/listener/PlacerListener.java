@@ -1,13 +1,8 @@
 package de.chaosschwein.autocrafter.listener;
 
 import de.chaosschwein.autocrafter.main.AutoMain;
-import de.chaosschwein.autocrafter.types.Crafter;
-import de.chaosschwein.autocrafter.types.CraftingRezept;
 import de.chaosschwein.autocrafter.types.Placer;
 import de.chaosschwein.autocrafter.utils.CheckBlocks;
-import de.chaosschwein.autocrafter.utils.DataCache;
-import de.chaosschwein.autocrafter.utils.Utils;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Dispenser;
@@ -15,8 +10,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.HashMap;
 
 public class PlacerListener implements Listener {
 

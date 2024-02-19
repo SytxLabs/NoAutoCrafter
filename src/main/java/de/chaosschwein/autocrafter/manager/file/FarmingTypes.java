@@ -1,7 +1,7 @@
 package de.chaosschwein.autocrafter.manager.file;
 
-import de.chaosschwein.autocrafter.types.FarmType;
 import de.chaosschwein.autocrafter.manager.FileManager;
+import de.chaosschwein.autocrafter.types.FarmType;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;

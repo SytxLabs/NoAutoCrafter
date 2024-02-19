@@ -1,7 +1,8 @@
 package de.chaosschwein.autocrafter.listener;
 
-import de.chaosschwein.autocrafter.types.*;
 import de.chaosschwein.autocrafter.main.AutoMain;
+import de.chaosschwein.autocrafter.types.FarmType;
+import de.chaosschwein.autocrafter.types.FarmingStation;
 import de.chaosschwein.autocrafter.utils.CheckBlocks;
 import de.chaosschwein.autocrafter.utils.Utils;
 import org.bukkit.Bukkit;
@@ -10,7 +11,7 @@ import org.bukkit.Sound;
 import org.bukkit.block.Dispenser;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.*;
+import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;

@@ -4,7 +4,6 @@ import de.chaosschwein.autocrafter.enums.ChannelType;
 import de.chaosschwein.autocrafter.main.AutoMain;
 import de.chaosschwein.autocrafter.utils.Utils;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,22 +27,6 @@ public class Channel {
         this.name = name;
         this.ownerUUID = ownerUUID;
         this.password = password;
-    }
-
-    public static Channel PrivateChannel(ChannelType type, Material material, String name, String ownerUUID) {
-        return new Channel(type, material, name, ownerUUID, "");
-    }
-
-    public static Channel PublicChannel(ChannelType type, Material material, String name) {
-        return new Channel(type, material, name, "", "");
-    }
-
-    public static Channel ProtectedChannel(ChannelType type, Material material, String name, String password) {
-        return new Channel(type, material, name, "", Utils.hash(password));
-    }
-
-    public List<Sender> getSenders() {
-        return senders;
     }
 
     public List<Receiver> getReceivers() {
@@ -98,24 +81,12 @@ public class Channel {
         users.add(uuid);
     }
 
-    public void addUser(Player player) {
-        users.add(player.getUniqueId().toString());
-    }
-
     public void removeSender(Sender sender) {
         senders.remove(sender);
     }
 
     public void removeReceiver(Receiver receiver) {
         receivers.remove(receiver);
-    }
-
-    public void removeUser(String uuid) {
-        users.remove(uuid);
-    }
-
-    public void removeUser(Player player) {
-        users.remove(player.getUniqueId().toString());
     }
 
     public boolean isPublic() {

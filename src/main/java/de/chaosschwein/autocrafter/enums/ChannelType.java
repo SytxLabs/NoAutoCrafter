@@ -15,15 +15,6 @@ public enum ChannelType {
         this.material = material;
     }
 
-    public static ChannelType fromString(String s) {
-        for (ChannelType type : values()) {
-            if (type.name().equalsIgnoreCase(s)) {
-                return type;
-            }
-        }
-        return null;
-    }
-
     public String getTranslation() {
         return AutoMain.language.fileManager.read(translationKey);
     }

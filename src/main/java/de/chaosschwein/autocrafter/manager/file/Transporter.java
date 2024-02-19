@@ -11,7 +11,10 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public class Transporter {
 
@@ -62,18 +65,6 @@ public class Transporter {
                 }
             }
         }
-    }
-
-    public boolean addChannel(Channel channel) {
-        String hash = channel.getHash(true);
-        file.write("Channel." + hash + ".Type", channel.type().toString());
-        file.write("Channel." + hash + ".Material", channel.material().toString());
-        file.write("Channel." + hash + ".Name", channel.name());
-        file.write("Channel." + hash + ".OwnerUUID", channel.ownerUUID());
-        file.write("Channel." + hash + ".Password", Utils.hash(channel.password()));
-        file.write("Channel." + hash + ".Users", channel.getUsers());
-        channels.put(hash, channel);
-        return true;
     }
 
     public void removeChannel(Channel channel) {
@@ -135,8 +126,8 @@ public class Transporter {
 
     }
 
-    public boolean addSender(Sender sender) {
-        if (!sender.isSender) return false;
+    public void addSender(Sender sender) {
+        if (!sender.isSender) return;
         Location loc = sender.getChest().getLocation();
         String locString = file.locToString(loc);
         file.write("Sender." + locString + ".Type", sender.getType().toString());
@@ -145,22 +136,6 @@ public class Transporter {
         Channel channel = channels.get(sender.getChannel().getHash());
         if (channel != null) {
             channel.addSender(sender);
-        }
-        return true;
-    }
-
-    public void removeSender(Sender sender) {
-        if (!sender.isSender) return;
-        Location loc = sender.getChest().getLocation();
-        String locString = file.locToString(loc);
-        file.remove("Sender." + locString + ".Type");
-        file.remove("Sender." + locString + ".PolicyType");
-        file.remove("Sender." + locString + ".Channel");
-        file.remove("Sender." + locString);
-        senders.remove(loc);
-        Channel channel = channels.get(sender.getChannel().getHash());
-        if (channel != null) {
-            channel.removeSender(sender);
         }
     }
 
@@ -178,14 +153,6 @@ public class Transporter {
         }
     }
 
-    public void getSendersByChannel(Channel channel) {
-        for (Sender sender : senders.values()) {
-            if (Objects.equals(sender.getChannel().getHash(), channel.getHash())) {
-                channel.addSender(sender);
-            }
-        }
-    }
-
     public void addReceiver(Receiver receiver) {
         if (!receiver.isReceiver) return;
         String locString = file.locToString(receiver.getChest().getLocation());
@@ -196,20 +163,6 @@ public class Transporter {
         if (channel != null) {
             channel.addReceiver(receiver);
         }
-    }
-
-    public boolean removeReceiver(Receiver receiver) {
-        if (!receiver.isReceiver) return false;
-        String locString = file.locToString(receiver.getChest().getLocation());
-        file.remove("Receiver." + locString + ".Channel");
-        file.remove("Receiver." + locString + ".IdInChannel");
-        file.remove("Receiver." + locString);
-        receivers.remove(receiver.getChest().getLocation());
-        Channel channel = channels.get(receiver.getChannel().getHash());
-        if (channel != null) {
-            channel.removeReceiver(receiver);
-        }
-        return true;
     }
 
     public void removeReceiver(Location loc) {

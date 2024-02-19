@@ -19,6 +19,8 @@ public class Receiver implements Comparable<Receiver> {
             return;
         }
         this.chest = (Chest) chest.getBlock().getState();
+        this.channel = channel;
+        this.idInChannel = idInChannel;
         this.isReceiver = true;
     }
 
@@ -33,10 +35,6 @@ public class Receiver implements Comparable<Receiver> {
 
     public Channel getChannel() {
         return channel;
-    }
-
-    public void setChannel(Channel channel) {
-        this.channel = channel;
     }
 
     public int getIdInChannel() {

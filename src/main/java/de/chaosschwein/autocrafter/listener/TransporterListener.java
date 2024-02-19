@@ -125,7 +125,7 @@ public class TransporterListener implements Listener {
             if (sender.hasNotValidReceivers(item)) {
                 return;
             }
-            if (!sender.moveItems(item)) {
+            if (sender.moveItems(item)) {
                 return;
             }
             e.setCancelled(true);
@@ -169,7 +169,7 @@ public class TransporterListener implements Listener {
             if (sender.hasNotValidReceivers(item)) {
                 return;
             }
-            if (!sender.moveItems(item)) {
+            if (sender.moveItems(item)) {
                 return;
             }
             event.setCancelled(true);

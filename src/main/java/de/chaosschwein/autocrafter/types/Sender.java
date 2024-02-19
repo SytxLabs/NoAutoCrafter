@@ -41,16 +41,8 @@ public class Sender {
         return type;
     }
 
-    public void setType(SenderType type) {
-        this.type = type;
-    }
-
     public Channel getChannel() {
         return channel;
-    }
-
-    public void setChannel(Channel channel) {
-        this.channel = channel;
     }
 
     public boolean moveItems(ItemStack item) {
@@ -61,7 +53,7 @@ public class Sender {
             case RoundRobin -> getRoundRobinReceiver(item);
         };
         if (receiver == null || Utils.hasNotEnoughPlace(receiver.getChest().getBlockInventory(), item)) {
-            return false;
+            return true;
         }
         receiver.getChest().getBlockInventory().addItem(item);
         receiver.getChest().update();
@@ -74,7 +66,7 @@ public class Sender {
                 }
             }
         });
-        return true;
+        return false;
     }
 
     private Receiver getRoundRobinReceiver(ItemStack item) {

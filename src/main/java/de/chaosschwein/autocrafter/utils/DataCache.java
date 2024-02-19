@@ -1,8 +1,6 @@
 package de.chaosschwein.autocrafter.utils;
 
-import de.chaosschwein.autocrafter.types.Channel;
 import de.chaosschwein.autocrafter.types.Crafter;
-import de.chaosschwein.autocrafter.types.Receiver;
 import org.bukkit.Location;
 
 import java.util.HashMap;

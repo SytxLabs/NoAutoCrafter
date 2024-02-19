@@ -10,8 +10,6 @@ import java.util.Objects;
 
 @SuppressWarnings("unused")
 public class Message {
-
-
     private CommandSender player = null;
 
     public Message(Player player) {

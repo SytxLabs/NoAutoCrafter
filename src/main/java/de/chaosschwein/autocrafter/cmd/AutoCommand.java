@@ -1,8 +1,8 @@
 package de.chaosschwein.autocrafter.cmd;
 
-import de.chaosschwein.autocrafter.types.Crafter;
 import de.chaosschwein.autocrafter.main.AutoMain;
 import de.chaosschwein.autocrafter.manager.file.CrafterFile;
+import de.chaosschwein.autocrafter.types.Crafter;
 import de.chaosschwein.autocrafter.utils.CheckBlocks;
 import de.chaosschwein.autocrafter.utils.InventoryCreator;
 import de.chaosschwein.autocrafter.utils.Message;

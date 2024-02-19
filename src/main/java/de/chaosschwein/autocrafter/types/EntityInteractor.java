@@ -11,7 +11,6 @@ import org.bukkit.block.data.Directional;
 import org.bukkit.entity.EntityType;
 
 import java.util.HashMap;
-import java.util.List;
 
 public class EntityInteractor {
 

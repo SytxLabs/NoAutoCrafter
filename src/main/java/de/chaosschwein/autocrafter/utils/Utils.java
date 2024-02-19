@@ -8,8 +8,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.BlockIterator;
 
 import java.util.ArrayList;
-import java.util.Objects;
-import java.util.function.Function;
 
 @SuppressWarnings("unused")
 public class Utils {

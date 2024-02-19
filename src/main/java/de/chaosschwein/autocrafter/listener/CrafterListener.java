@@ -1,11 +1,11 @@
 package de.chaosschwein.autocrafter.listener;
 
+import de.chaosschwein.autocrafter.main.AutoMain;
+import de.chaosschwein.autocrafter.manager.file.CrafterFile;
 import de.chaosschwein.autocrafter.types.Breaker;
 import de.chaosschwein.autocrafter.types.Crafter;
 import de.chaosschwein.autocrafter.types.CraftingRezept;
 import de.chaosschwein.autocrafter.types.Placer;
-import de.chaosschwein.autocrafter.main.AutoMain;
-import de.chaosschwein.autocrafter.manager.file.CrafterFile;
 import de.chaosschwein.autocrafter.utils.CheckBlocks;
 import de.chaosschwein.autocrafter.utils.DataCache;
 import de.chaosschwein.autocrafter.utils.Message;
@@ -23,6 +23,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
 
+@SuppressWarnings("DuplicatedCode")
 public class CrafterListener implements Listener {
 
     @EventHandler

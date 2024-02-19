@@ -204,6 +204,7 @@ public class CheckBlocks {
         return false;
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean isEntityInteractor() {
         Block b = this.block;
         Location loc = b.getLocation();
