@@ -3,6 +3,7 @@ package de.chaosschwein.autocrafter.types;
 import de.chaosschwein.autocrafter.main.AutoMain;
 import de.chaosschwein.autocrafter.utils.CheckBlocks;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Dispenser;
@@ -14,7 +15,7 @@ public class Breeder {
     public final boolean isBreeder;
 
     public final Dispenser dispenser;
-    public final Block lamp;
+    public Block lamp;
 
     public BoundingBox boundingBox;
 
@@ -26,7 +27,16 @@ public class Breeder {
             return;
         }
         this.dispenser = (Dispenser) dispenser.getBlock().getState();
-        this.lamp = dispenser.getBlock().getRelative(0, 1, 0);
+        if (this.dispenser.getBlockData() instanceof Directional) {
+            BlockFace face = ((Directional) this.dispenser.getBlockData()).getFacing();
+            this.lamp = switch (face) {
+                case NORTH -> this.dispenser.getWorld().getBlockAt(dispenser.getBlockX(), dispenser.getBlockY() + 2, dispenser.getBlockZ() - 1);
+                case SOUTH -> this.dispenser.getWorld().getBlockAt(dispenser.getBlockX(), dispenser.getBlockY() + 2, dispenser.getBlockZ() + 1);
+                case WEST -> this.dispenser.getWorld().getBlockAt(dispenser.getBlockX() - 1, dispenser.getBlockY() + 2, dispenser.getBlockZ());
+                case EAST -> this.dispenser.getWorld().getBlockAt(dispenser.getBlockX() + 1, dispenser.getBlockY() + 2, dispenser.getBlockZ());
+                default -> null;
+            };
+        }
         this.isBreeder = true;
         registerBlocksInRange();
     }
@@ -47,6 +57,9 @@ public class Breeder {
     }
 
     public void blinkLamp() {
+        if (lamp == null || lamp.getType() != Material.REDSTONE_LAMP) {
+            return;
+        }
         Lightable lightable = (Lightable) lamp.getBlockData();
         lightable.setLit(true);
         lamp.setBlockData(lightable);

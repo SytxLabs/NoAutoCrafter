@@ -27,7 +27,7 @@ public class EntityInteractor {
         if (this.dispenser.getBlockData() instanceof Directional) {
             BlockFace face = ((Directional) this.dispenser.getBlockData()).getFacing();
             Block hopper = switch (face) {
-                case NORTH -> this.dispenser.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() + 1, loc.getBlockZ());
+                case NORTH -> this.dispenser.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() - 2, loc.getBlockZ() - 1);
                 case SOUTH -> this.dispenser.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() - 2, loc.getBlockZ() + 1);
                 case WEST -> this.dispenser.getWorld().getBlockAt(loc.getBlockX() - 1, loc.getBlockY() - 2, loc.getBlockZ());
                 case EAST -> this.dispenser.getWorld().getBlockAt(loc.getBlockX() + 1, loc.getBlockY() - 2, loc.getBlockZ());
