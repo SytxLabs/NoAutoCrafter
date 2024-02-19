@@ -23,11 +23,12 @@ public class Sender {
     private int lastIdFromChannel = -1;
 
 
-    public Sender(Location chest, Channel channel) {
+    public Sender(Location chest, SenderType type, Channel channel) {
         if (!(new CheckBlocks(chest.getBlock())).isSender()) {
             return;
         }
         this.chest = (Chest) chest.getBlock().getState();
+        this.type = type;
         this.channel = channel;
         this.isSender = true;
     }

@@ -5,8 +5,8 @@ import org.bukkit.Material;
 
 public enum ChannelType {
     Private("channel_type.private", Material.RED_DYE),
-    Protected("channel_type.protected", Material.GREEN_DYE),
-    Public("channel_type.public", Material.BLUE_DYE);
+    Protected("channel_type.protected", Material.YELLOW_DYE),
+    Public("channel_type.public", Material.WHITE_DYE);
     private final String translationKey;
     public final Material material;
 

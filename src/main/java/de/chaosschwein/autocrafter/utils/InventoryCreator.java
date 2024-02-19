@@ -1,12 +1,15 @@
 package de.chaosschwein.autocrafter.utils;
 
 import de.chaosschwein.autocrafter.enums.ChannelType;
+import de.chaosschwein.autocrafter.enums.SenderType;
 import de.chaosschwein.autocrafter.main.AutoMain;
 import de.chaosschwein.autocrafter.types.Channel;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -19,7 +22,11 @@ public class InventoryCreator {
 
     public InventoryCreator(Player player) {
         this.player = player;
-        inventoryCreators.put(player, this);
+        if (inventoryCreators.containsKey(player)) {
+            inventoryCreators.replace(player, this);
+        } else {
+            inventoryCreators.put(player, this);
+        }
     }
 
     private void fillInv(Inventory inv) {
@@ -40,23 +47,21 @@ public class InventoryCreator {
         }
     }
 
-    public void openReceiver() {
-        if (player != null) {
-            Inventory inv = Bukkit.createInventory(null, 36, "§d§lReceiver");
-            fillInv(inv);
-            inv.setItem(4, null);
-            inv.setItem(20, new ItemBuilder(Material.RED_CONCRETE).setName(AutoMain.language.InventoryBack).build());
-            inv.setItem(22, new ItemBuilder(Material.BOOK).setName(AutoMain.language.InventoryAddItem).setLore(AutoMain.language.InventoryAddItemLore).build());
-            inv.setItem(24, new ItemBuilder(Material.LIME_CONCRETE).setName(AutoMain.language.InventoryCreateReceiver).build());
-            player.openInventory(inv);
-        }
+    public void openSender() {
+        openSender(null);
     }
 
-    public void openSender() {
+    public void openSender(Channel channel) {
         if (player != null) {
             Inventory inv = Bukkit.createInventory(null, 36, "§d§lSender");
             fillInv(inv);
-            inv.setItem(4, null);
+            if (channel != null) {
+                selectedChannel = channel;
+                inv.setItem(12, new ItemBuilder(channel.material).setName(channel.name).build());
+            } else {
+                inv.setItem(12, new ItemBuilder(Material.BARRIER).setName(AutoMain.language.InventorySelectChannel).build());
+            }
+            inv.setItem(14, new ItemBuilder(SenderType.Random.material).setName(SenderType.Random.getTranslation()).build());
             inv.setItem(20, new ItemBuilder(Material.RED_CONCRETE).setName(AutoMain.language.InventoryBack).build());
             inv.setItem(22, new ItemBuilder(Material.BOOK).setName(AutoMain.language.InventoryAddItem).setLore(AutoMain.language.InventoryAddItemLore).build());
             inv.setItem(24, new ItemBuilder(Material.LIME_CONCRETE).setName(AutoMain.language.InventoryCreateSender).build());
@@ -115,6 +120,8 @@ public class InventoryCreator {
         player.openInventory(inv);
     }
 
+    public Channel selectedChannel;
+    public boolean isCreatingChannel = false;
     public void openAddChannel() {
         if (player == null) {
             return;
@@ -128,10 +135,23 @@ public class InventoryCreator {
         player.openInventory(inv);
     }
 
+    public void openPasswordChannel(Channel channel) {
+        if (player == null) {
+            return;
+        }
+        selectedChannel = channel;
+        final Inventory anvilInventory = Bukkit.createInventory(player, InventoryType.ANVIL, "§d§lChannelPassword");
+        AnvilInventory anvil = (AnvilInventory) anvilInventory;
+        anvil.setItem(0, new ItemBuilder(Material.PAPER).setName("§ePassword").build());
+        anvil.setMaximumRepairCost(0);
+        player.openInventory(anvil);
+    }
+
     public void openCreateChannel() {
         if (player == null) {
             return;
         }
+        isCreatingChannel = true;
         Inventory inv = Bukkit.createInventory(null, 36, "§d§lCreateChannel");
         fillInv(inv);
         inv.setItem(12, null);
@@ -146,13 +166,12 @@ public class InventoryCreator {
         if (player == null) {
             return;
         }
-        Inventory inv = Bukkit.createInventory(null, 27, "§d§l" + channel.name);
+        selectedChannel = channel;
+        Inventory inv = Bukkit.createInventory(null, 27, "§d§lChannel: " + channel.name);
         fillInv(inv);
         inv.setItem(12, new ItemBuilder(Material.BARRIER).setName(AutoMain.language.InventoryDeleteChannel).build());
         inv.setItem(14, new ItemBuilder(Material.LIME_DYE).setName(AutoMain.language.InventoryUseChannel).build());
+        inv.setItem(20, new ItemBuilder(Material.RED_CONCRETE).setName(AutoMain.language.InventoryBack).build());
         player.openInventory(inv);
     }
-
-
-
 }

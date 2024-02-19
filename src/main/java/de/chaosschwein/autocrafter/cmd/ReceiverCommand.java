@@ -1,7 +1,6 @@
 package de.chaosschwein.autocrafter.cmd;
 
 import de.chaosschwein.autocrafter.main.AutoMain;
-import de.chaosschwein.autocrafter.manager.file.Transporter;
 import de.chaosschwein.autocrafter.utils.CheckBlocks;
 import de.chaosschwein.autocrafter.utils.InventoryCreator;
 import de.chaosschwein.autocrafter.utils.Message;
@@ -22,15 +21,10 @@ public class ReceiverCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender instanceof Player p) {
-            if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
-                if (!Utils.hasPermission((Player) sender, AutoMain.permission.CrafterAdmin)) {
-                    return true;
-                }
-                (new Message(sender)).send(AutoMain.language.reload);
-                AutoMain.reload();
+            if (AutoCommand.reload(sender, args)) {
                 return true;
             }
-            if (!AutoMain.crafter) {
+            if (!AutoMain.transport) {
                 return true;
             }
             if (!Utils.hasPermission((Player) sender, AutoMain.permission.ReceiverCreate)) {
@@ -39,9 +33,9 @@ public class ReceiverCommand implements CommandExecutor {
             Block block = Utils.getTargetBlock(p, 5);
             Message msg = new Message(p);
             if (new CheckBlocks(block).isReceiver()) {
-                if (!new Transporter().containsReceiver(block.getLocation())) {
+                if (!AutoMain.transporter.isReceiver(block.getLocation())) {
                     receiver.put(p, block);
-                    new InventoryCreator(p).openReceiver();
+                    new InventoryCreator(p).openChannelViewer();
                 } else {
                     msg.send(AutoMain.language.ReceiverAlreadyExists);
                 }

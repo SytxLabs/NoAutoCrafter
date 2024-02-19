@@ -1,6 +1,7 @@
 package de.chaosschwein.autocrafter.manager.file;
 
 import de.chaosschwein.autocrafter.enums.ChannelType;
+import de.chaosschwein.autocrafter.enums.SenderType;
 import de.chaosschwein.autocrafter.manager.FileManager;
 import de.chaosschwein.autocrafter.types.Channel;
 import de.chaosschwein.autocrafter.types.Receiver;
@@ -52,7 +53,8 @@ public class Transporter {
                 Location loc = file.stringToLoc(locString);
                 if (loc != null) {
                     Channel channel = channels.get(file.read("Sender." + locString + ".Channel"));
-                    Sender sender = new Sender(loc, channel);
+                    SenderType type = SenderType.valueOf(file.read("Sender." + locString + ".Type"));
+                    Sender sender = new Sender(loc, type, channel);
                     if (sender.isSender) {
                         senders.put(loc, sender);
                         channel.addSender(sender);
@@ -74,7 +76,7 @@ public class Transporter {
         return true;
     }
 
-    public boolean removeChannel(Channel channel) {
+    public void removeChannel(Channel channel) {
         String hash = channel.getHash();
         file.remove("Channel." + hash + ".Type");
         file.remove("Channel." + hash + ".Material");
@@ -84,7 +86,6 @@ public class Transporter {
         file.remove("Channel." + hash + ".Users");
         file.remove("Channel." + hash);
         channels.remove(hash);
-        return true;
     }
 
     public Channel getChannel(String hash) {
@@ -109,14 +110,29 @@ public class Transporter {
                 channel.addReceiver(receiver);
         }
 
-
-
         if (channels.containsKey(hash)) {
             channels.replace(hash, channel);
         } else {
             channels.put(hash, channel);
         }
         return channel;
+    }
+
+    public void saveChannel(Channel channel) {
+        String hash = channel.getHash(true);
+        file.write("Channel." + hash + ".Type", channel.type().toString());
+        file.write("Channel." + hash + ".Material", channel.material().toString());
+        file.write("Channel." + hash + ".Name", channel.name());
+        file.write("Channel." + hash + ".OwnerUUID", channel.ownerUUID());
+        file.write("Channel." + hash + ".Password", Utils.hash(channel.password()));
+        file.write("Channel." + hash + ".Users", channel.getUsers());
+
+        if (channels.containsKey(hash)) {
+            channels.replace(hash, channel);
+        } else {
+            channels.put(hash, channel);
+        }
+
     }
 
     public boolean addSender(Sender sender) {
@@ -170,8 +186,8 @@ public class Transporter {
         }
     }
 
-    public boolean addReceiver(Receiver receiver) {
-        if (!receiver.isReceiver) return false;
+    public void addReceiver(Receiver receiver) {
+        if (!receiver.isReceiver) return;
         String locString = file.locToString(receiver.getChest().getLocation());
         file.write("Receiver." + locString + ".Channel", receiver.getChannel().getHash());
         file.write("Receiver." + locString + ".IdInChannel", receiver.getIdInChannel());
@@ -180,7 +196,6 @@ public class Transporter {
         if (channel != null) {
             channel.addReceiver(receiver);
         }
-        return true;
     }
 
     public boolean removeReceiver(Receiver receiver) {

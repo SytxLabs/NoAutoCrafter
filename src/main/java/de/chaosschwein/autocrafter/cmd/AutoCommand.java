@@ -23,12 +23,7 @@ public class AutoCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender instanceof Player p) {
-            if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
-                if (!Utils.hasPermission((Player) sender, AutoMain.permission.CrafterAdmin)) {
-                    return true;
-                }
-                (new Message(sender)).send(AutoMain.language.reload);
-                AutoMain.reload();
+            if (AutoCommand.reload(sender, args)) {
                 return true;
             }
             if (!AutoMain.crafter) {
@@ -51,6 +46,18 @@ public class AutoCommand implements CommandExecutor {
                 msg.send(AutoMain.language.CrafterIsFalse);
             }
 
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean reload(CommandSender sender, String[] args) {
+        if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
+            if (!Utils.hasPermission((Player) sender, AutoMain.permission.CrafterAdmin)) {
+                return true;
+            }
+            (new Message(sender)).send(AutoMain.language.reload);
+            AutoMain.reload();
             return true;
         }
         return false;

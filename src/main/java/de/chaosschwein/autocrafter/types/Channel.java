@@ -1,6 +1,7 @@
 package de.chaosschwein.autocrafter.types;
 
 import de.chaosschwein.autocrafter.enums.ChannelType;
+import de.chaosschwein.autocrafter.main.AutoMain;
 import de.chaosschwein.autocrafter.utils.Utils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -14,7 +15,7 @@ public class Channel {
     public final Material material;
     public final String name;
     public final String ownerUUID;
-    public final String password;
+    public String password;
 
     private final List<String> users = new ArrayList<>();
 
@@ -146,5 +147,17 @@ public class Channel {
         lore.add("§7Active Senders: §e" + senders.size());
         lore.add("§7Active Receivers: §e" + receivers.size());
         return lore;
+    }
+
+    public void save() {
+        AutoMain.transporter.saveChannel(this);
+    }
+
+    public void setPassword(String password) {
+        this.password = Utils.hash(password);
+    }
+
+    public void delete() {
+        AutoMain.transporter.removeChannel(this);
     }
 }
