@@ -74,3 +74,27 @@ You need for a FarmingStation:
 1x Farmland or Soul sand
 
 To use the farming station activate the dispenser and add a Seed
+
+
+
+## Breeding Station
+![breeder](https://github.com/SytxLabs/MCAutoCrafter/assets/77498048/c4aabfe6-bbc0-4de8-b066-369b84d6fdbf)
+
+You need for a BreedingStation
+1x Dispenser
+1x Hopper
+1x Redstone Lamp
+1x Coarse Dirt
+
+To use the Breeding Station give in the Dispenser food for the Animal, activate the Dispenser and 2 Animals in Range (default 3) will be breed
+
+## Animal Interactor
+![animal_interactor](https://github.com/SytxLabs/MCAutoCrafter/assets/77498048/e552fb80-7b0b-4b6a-ad51-44a4e9f1a315)
+
+You need for a Animal Interactor
+1x Dispenser
+2x Hopper
+1x Coarse Dirt
+
+To use the Animal Interactor give a bucket or bowl in the Dispenser and activate it
+
