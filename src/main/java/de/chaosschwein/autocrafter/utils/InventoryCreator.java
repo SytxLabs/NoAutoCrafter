@@ -107,7 +107,7 @@ public class InventoryCreator {
         fillInv(inv);
         for (int i = 0; i < channels.size(); i++) {
             Channel channel = channels.get(i);
-            ChatColor color = channel.isPublic() ? ChatColor.GREEN : channel.isProtected() ? ChatColor.YELLOW : ChatColor.RED;
+            ChatColor color = channel.isPublic() ? ChatColor.GREEN : ChatColor.RED;
             inv.setItem(i, new ItemBuilder(channel.material).setName(color + channel.name).setLore(channel.getLore()).build());
         }
         int lastRowBeginning = (invSize / 9 - 1) * 9;

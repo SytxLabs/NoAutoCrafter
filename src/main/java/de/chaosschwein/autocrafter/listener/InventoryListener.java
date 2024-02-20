@@ -147,16 +147,19 @@ public class InventoryListener implements Listener {
                 msg.send(AutoMain.language.ChannelNotFound);
                 return;
             }
+
             p.getInventory().addItem(i);
             Channel channel = channels.get(0);
-            if (channel.isPublic()) {
-                channel.addUser(p.getUniqueId().toString());
-                channel.save();
-                msg.send(AutoMain.language.InventoryUseChannel);
-                p.closeInventory();
-                useChannelForReceiver(p);
-                useChannelForSender(p, channel);
+            if (!channel.isPublic()) {
+                msg.send(AutoMain.language.ChannelNotFound);
+                return;
             }
+            channel.addUser(p.getUniqueId().toString());
+            channel.save();
+            msg.send(AutoMain.language.InventoryUseChannel);
+            p.closeInventory();
+            useChannelForReceiver(p);
+            useChannelForSender(p, channel);
         }
     }
 

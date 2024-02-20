@@ -2,7 +2,6 @@ package de.chaosschwein.autocrafter.types;
 
 import de.chaosschwein.autocrafter.enums.ChannelType;
 import de.chaosschwein.autocrafter.main.AutoMain;
-import de.chaosschwein.autocrafter.utils.Utils;
 import org.bukkit.Material;
 
 import java.util.ArrayList;
@@ -61,7 +60,7 @@ public class Channel {
         return password;
     }
 
-    public String getHash(boolean hashPassword) {
+    public String getHash(@SuppressWarnings("unused") boolean hashPassword) {
         //noinspection SwitchStatementWithTooFewBranches
         return switch (type) {
             case Public -> name + type.name() + material.name();
@@ -98,23 +97,15 @@ public class Channel {
     }
 
     public boolean isPublic() {
-        return ownerUUID.isEmpty();
-    }
-
-    public boolean isProtected() {
-        return !ownerUUID.isEmpty() && !password.isEmpty();
+        return type == ChannelType.Public;
     }
 
     public boolean isPrivate() {
-        return !ownerUUID.isEmpty() && password.isEmpty();
+        return type == ChannelType.Private;
     }
 
     public boolean isOwner(String uuid) {
         return ownerUUID.equals(uuid);
-    }
-
-    public boolean isPassword(String password) {
-        return Utils.verifyHash(password, this.password);
     }
 
     public List<String> getLore() {
@@ -129,10 +120,6 @@ public class Channel {
 
     public void save() {
         AutoMain.transporter.saveChannel(this);
-    }
-
-    public void setPassword(String password) {
-        this.password = Utils.hash(password);
     }
 
     public void delete() {
