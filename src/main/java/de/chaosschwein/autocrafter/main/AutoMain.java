@@ -20,7 +20,7 @@ public final class AutoMain extends JavaPlugin {
     public static Language language = new Language();
     public static Permission permission = new Permission();
     public static FarmingTypes farmingTypes = new FarmingTypes();
-    public static Transporter transporter = new Transporter();
+    public static Transporter transporter;
     public static FileManager config;
     public static String prefix = "&8[&aAutoCrafter§8] &7";
     public static boolean crafter = true;
@@ -41,6 +41,7 @@ public final class AutoMain extends JavaPlugin {
         AutoMain.language = new Language();
         AutoMain.permission = new Permission();
         AutoMain.farmingTypes = new FarmingTypes();
+        AutoMain.transporter = new Transporter();
     }
 
     @Override
@@ -92,6 +93,12 @@ public final class AutoMain extends JavaPlugin {
             Bukkit.getConsoleSender().sendMessage(prefix + "§aAutoCraft enabled!");
             Bukkit.getConsoleSender().sendMessage(prefix + "§a");
             Bukkit.getConsoleSender().sendMessage(prefix + "§a--------------------------");
+        } else {
+            Bukkit.getConsoleSender().sendMessage(prefix + "§c--------------------------");
+            Bukkit.getConsoleSender().sendMessage(prefix + "§c");
+            Bukkit.getConsoleSender().sendMessage(prefix + "§cAutoCraft failed to enable!");
+            Bukkit.getConsoleSender().sendMessage(prefix + "§c");
+            Bukkit.getConsoleSender().sendMessage(prefix + "§c--------------------------");
         }
 
         new UpdateChecker(this, 113127).getVersion(version -> {
@@ -101,7 +108,7 @@ public final class AutoMain extends JavaPlugin {
                 Bukkit.getConsoleSender().sendMessage(prefix + "Up to date!");
             }
         });
-
+        transporter = new Transporter();
     }
 
     @Override

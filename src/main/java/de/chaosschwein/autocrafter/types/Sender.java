@@ -63,7 +63,6 @@ public class Sender {
         if (receiver == null || Utils.hasNotEnoughPlace(((Chest)receiver.getChest().getState()).getBlockInventory(), item)) {
             return true;
         }
-        System.out.println("Receiver: " + receiver.getIdInChannel());
         ((Chest)receiver.getChest().getState()).getBlockInventory().addItem(item);
         receiver.getChest().getState().update();
         ((Chest)receiver.getChest().getState()).getBlockInventory().getViewers().forEach(player -> {
@@ -79,7 +78,6 @@ public class Sender {
     }
 
     private Receiver getRoundRobinReceiver(ItemStack item) {
-        System.out.println("RoundRobin");
         Receiver receiver;
         List<Receiver> receivers = channel.getReceivers();
         if (lastIdFromChannel >= receivers.size() + 1) {
