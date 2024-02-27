@@ -21,6 +21,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -33,7 +34,6 @@ import java.util.Objects;
 public class InventoryListener implements Listener {
 
     public static List<String> functions = new ArrayList<>() {{
-        add("§d§lAutoCrafter");
         add("§d§lAddChannel");
         add("§d§lCreateChannel");
         add("§d§lSender");
@@ -54,6 +54,7 @@ public class InventoryListener implements Listener {
         if (!functions.contains(title) && !title.startsWith("§d§lChannel: ") && !title.startsWith("§d§lChannelViewer")) {
             return;
         }
+        System.out.println("Title: " + title);
         String itemName = Objects.requireNonNull(item.getItemMeta()).getDisplayName();
         if (e.getClickedInventory() != p.getOpenInventory().getTopInventory()) {
             return;
@@ -63,7 +64,6 @@ public class InventoryListener implements Listener {
             return;
         }
         switch (title) {
-            case "§d§lAutoCrafter" -> onInventoryAutoCraftClick(e, p, item, msg);
             case "§d§lAddChannel" -> onInventoryAddChannelClick(p, inv, msg, itemName);
             case "§d§lCreateChannel" -> onInventoryCreateChannelClick(p, inv, msg, itemName);
             case "§d§lSender" -> onInventorySenderClick(p, inv, msg, itemName);
@@ -76,7 +76,21 @@ public class InventoryListener implements Listener {
         }
     }
 
-    public void onInventoryAutoCraftClick(InventoryClickEvent e, Player p, ItemStack item, Message msg) {
+    @EventHandler
+    public void onCraft(CraftItemEvent e) {
+        if (!(e.getWhoClicked() instanceof Player p)) {
+            return;
+        }
+        String title = e.getView().getTitle();
+        Inventory inv = e.getClickedInventory();
+        ItemStack item = e.getCurrentItem();
+        Message msg = new Message(p);
+        if (inv == null || item == null || item.getType() == Material.AIR) {
+            return;
+        }
+        if (!"§d§lAutoCrafter".contains(title)) {
+            return;
+        }
         ItemStack[] items = new ItemStack[9];
         for (int i = 0; i < 9; i++) {
             ItemStack iStack = e.getInventory().getItem(i + 1);
@@ -93,6 +107,7 @@ public class InventoryListener implements Listener {
         crafterFile.save(p, AutoCommand.crafter.get(p), recipe);
 
         msg.send(AutoMain.language.CrafterCreated);
+        p.getInventory().addItem(item);
         p.closeInventory();
     }
 
