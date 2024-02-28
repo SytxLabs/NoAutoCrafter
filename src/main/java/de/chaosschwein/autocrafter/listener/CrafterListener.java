@@ -36,71 +36,62 @@ public class CrafterListener implements Listener {
         Dispenser dispenser = (Dispenser) e.getBlock().getState();
         if (!new CheckBlocks(dispenser.getBlock()).isCrafter()) return;
         Crafter c = DataCache.getCrafter(dispenser.getLocation());
-        if (c.craftingTable != null && c.hopper != null && c.isRegistered()) {
-            e.setCancelled(true);
-            CraftingRezept craftingRezept = c.getRezept();
-            if (craftingRezept != null) {
-                if (waitingForFinish.contains(e.getBlock())) {
-                    return;
-                }
-                ItemStack[] di = Utils.getBlockInventory(dispenser.getBlock()).getContents();
-                HashMap<Material, Integer> ingredients = new HashMap<>();
-                for (ItemStack i : craftingRezept.getIngredients()) {
-                    if (i == null || i.getType() == Material.AIR) {
-                        continue;
+        if (c.craftingTable == null || c.hopper == null || !c.isRegistered()) return;
+        e.setCancelled(true);
+        if (waitingForFinish.contains(e.getBlock())) return;
+        CraftingRezept craftingRezept = c.getRezept();
+        if (craftingRezept == null) return;
+        ItemStack[] di = Utils.getBlockInventory(dispenser.getBlock()).getContents();
+        HashMap<Material, Integer> ingredients = new HashMap<>();
+        for (ItemStack i : craftingRezept.getIngredients()) {
+            if (i == null || i.getType() == Material.AIR) continue;
+            if (ingredients.containsKey(i.getType())) {
+                ingredients.put(i.getType(), ingredients.get(i.getType()) + i.getAmount());
+                continue;
+            }
+            ingredients.put(i.getType(), i.getAmount());
+        }
+        HashMap<Material, Integer> itemsToRemove = new HashMap<>();
+        for (ItemStack itemStack : di) {
+            if (ingredients.isEmpty()) {
+                break;
+            }
+            if (itemStack == null || itemStack.getType() == Material.AIR) {
+                continue;
+            }
+            if (ingredients.containsKey(itemStack.getType())) {
+                int amount = ingredients.get(itemStack.getType());
+                if (amount <= itemStack.getAmount()) {
+                    ingredients.remove(itemStack.getType());
+                    if (itemsToRemove.containsKey(itemStack.getType())) {
+                        itemsToRemove.put(itemStack.getType(), itemsToRemove.get(itemStack.getType()) + amount);
+                    } else {
+                        itemsToRemove.put(itemStack.getType(), amount);
                     }
-                    if (ingredients.containsKey(i.getType())) {
-                        ingredients.put(i.getType(), ingredients.get(i.getType()) + i.getAmount());
-                        continue;
-                    }
-                    ingredients.put(i.getType(), i.getAmount());
-                }
-                HashMap<Material, Integer> itemsToRemove = new HashMap<>();
-
-                for (ItemStack itemStack : di) {
-                    if (ingredients.isEmpty()) {
-                        break;
-                    }
-                    if (itemStack == null || itemStack.getType() == Material.AIR) {
-                        continue;
-                    }
-                    if (ingredients.containsKey(itemStack.getType())) {
-                        int amount = ingredients.get(itemStack.getType());
-                        if (amount <= itemStack.getAmount()) {
-                            ingredients.remove(itemStack.getType());
-                            if (itemsToRemove.containsKey(itemStack.getType())) {
-                                itemsToRemove.put(itemStack.getType(), itemsToRemove.get(itemStack.getType()) + amount);
-                            } else {
-                                itemsToRemove.put(itemStack.getType(), amount);
-                            }
-                        } else {
-                            ingredients.put(itemStack.getType(), amount - itemStack.getAmount());
-                            if (itemsToRemove.containsKey(itemStack.getType())) {
-                                itemsToRemove.put(itemStack.getType(), itemsToRemove.get(itemStack.getType()) + itemStack.getAmount());
-                            } else {
-                                itemsToRemove.put(itemStack.getType(), itemStack.getAmount());
-                            }
-                        }
+                } else {
+                    ingredients.put(itemStack.getType(), amount - itemStack.getAmount());
+                    if (itemsToRemove.containsKey(itemStack.getType())) {
+                        itemsToRemove.put(itemStack.getType(), itemsToRemove.get(itemStack.getType()) + itemStack.getAmount());
+                    } else {
+                        itemsToRemove.put(itemStack.getType(), itemStack.getAmount());
                     }
                 }
-                if (!ingredients.isEmpty()) {
-                    return;
-                }
-                waitingForFinish.add(e.getBlock());
-                Bukkit.getScheduler().scheduleSyncDelayedTask(AutoMain.instance, () -> {
-                    for (Material m : itemsToRemove.keySet()) {
-                        Utils.removeItem((Dispenser) e.getBlock().getState(), m, itemsToRemove.get(m) - 1);
-                    }
-                    e.getBlock().getState().update();
-                    HashMap<Material, Integer> results = craftingRezept.getResults();
-                    for (Material m : results.keySet()) {
-                        Utils.addItem(Utils.getBlockInventory(c.hopper), m, results.get(m));
-                    }
-                    c.hopper.getState().update();
-                    waitingForFinish.remove(e.getBlock());
-                }, 5);
             }
         }
+        if (!ingredients.isEmpty()) return;
+        waitingForFinish.add(e.getBlock());
+        Bukkit.getScheduler().scheduleSyncDelayedTask(AutoMain.instance, () -> {
+            for (Material m : itemsToRemove.keySet()) {
+                Utils.removeItem((Dispenser) e.getBlock().getState(), m, itemsToRemove.get(m) - 1);
+            }
+            e.getBlock().getState().update();
+            HashMap<Material, Integer> results = craftingRezept.getResults();
+            for (Material m : results.keySet()) {
+                Utils.addItem(Utils.getBlockInventory(c.hopper), m, results.get(m));
+            }
+            c.hopper.getState().update();
+            waitingForFinish.remove(e.getBlock());
+        }, 5);
     }
 
     @EventHandler
