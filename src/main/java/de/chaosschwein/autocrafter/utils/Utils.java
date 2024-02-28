@@ -105,15 +105,15 @@ public class Utils {
             amount -= itemStack.getAmount();
             itemStack.setAmount(newAmount);
             dispenser.getSnapshotInventory().setItem(i, itemStack.getAmount() <= 0 ? null : itemStack);
-            dispenser.update();
             if (amount <= 0) {
                 break;
             }
         }
         dispenser.getInventory().getViewers().forEach(player -> {
             try {
-                //noinspection UnstableApiUsage
-                ((Player) player).updateInventory();
+                Inventory topInventory = player.getOpenInventory().getTopInventory();
+                topInventory.clear();
+                topInventory.setContents(dispenser.getSnapshotInventory().getContents());
             } catch (Exception ignored) {
             }
         });
