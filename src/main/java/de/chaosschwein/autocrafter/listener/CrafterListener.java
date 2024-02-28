@@ -5,7 +5,6 @@ import de.chaosschwein.autocrafter.manager.file.CrafterFile;
 import de.chaosschwein.autocrafter.types.Breaker;
 import de.chaosschwein.autocrafter.types.Crafter;
 import de.chaosschwein.autocrafter.types.CraftingRezept;
-import de.chaosschwein.autocrafter.types.Placer;
 import de.chaosschwein.autocrafter.utils.CheckBlocks;
 import de.chaosschwein.autocrafter.utils.DataCache;
 import de.chaosschwein.autocrafter.utils.Message;
@@ -19,6 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -51,6 +51,9 @@ public class CrafterListener implements Listener {
             }
             ingredients.put(i.getType(), i.getAmount());
         }
+        for (Material m : ingredients.keySet()) {
+            ingredients.replace(m, ingredients.get(m) - 1);
+        }
         HashMap<Material, Integer> itemsToRemove = new HashMap<>();
         for (ItemStack itemStack : di) {
             if (ingredients.isEmpty()) {
@@ -81,10 +84,27 @@ public class CrafterListener implements Listener {
         if (!ingredients.isEmpty()) return;
         waitingForFinish.add(e.getBlock());
         Bukkit.getScheduler().scheduleSyncDelayedTask(AutoMain.instance, () -> {
-            for (Material m : itemsToRemove.keySet()) {
-                Utils.removeItem((Dispenser) e.getBlock().getState(), m, itemsToRemove.get(m) - 1);
-            }
             e.getBlock().getState().update();
+            Dispenser d = (Dispenser) e.getBlock().getState();
+            Inventory inv = d.getSnapshotInventory();
+            for (int i = 0; i < inv.getSize(); i++) {
+                ItemStack iStack = inv.getItem(i);
+                if (iStack == null || iStack.getType() == Material.AIR) {
+                    continue;
+                }
+                if (itemsToRemove.containsKey(iStack.getType())) {
+                    int amount = itemsToRemove.get(iStack.getType());
+                    if ((iStack.getAmount() - amount) - 1 <= 0) {
+                        iStack.setAmount(0);
+                        iStack.setType(Material.AIR);
+                        itemsToRemove.put(iStack.getType(), amount - iStack.getAmount());
+                    } else {
+                        iStack.setAmount((iStack.getAmount() - amount) - 1);
+                        itemsToRemove.put(iStack.getType(), 0);
+                    }
+                }
+            }
+            d.update();
             HashMap<Material, Integer> results = craftingRezept.getResults();
             for (Material m : results.keySet()) {
                 Utils.addItem(Utils.getBlockInventory(c.hopper), m, results.get(m));

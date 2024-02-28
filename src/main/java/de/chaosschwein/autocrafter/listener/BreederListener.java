@@ -10,6 +10,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDispenseEvent;
@@ -42,7 +43,17 @@ public class BreederListener implements Listener {
             if (entities.size() < 2) return;
             entities.forEach(entity -> ((Animals)entity).setLoveModeTicks(600));
             b.blinkLamp();
-            Bukkit.getScheduler().runTaskLater(AutoMain.instance, () -> Utils.removeItem(b.dispenser, item.getType(), 2), 5L);
+            Bukkit.getScheduler().runTaskLater(AutoMain.instance, () -> {
+                Utils.removeItem(b.dispenser, item.getType(), 2);
+                if (b.dispenser == null || b.dispenser.getSnapshotInventory().getViewers().isEmpty()) return;
+                b.dispenser.getSnapshotInventory().getViewers().forEach(player -> {
+                    try {
+                        //noinspection UnstableApiUsage
+                        ((Player) player).updateInventory();
+                    } catch (Exception ignored) {
+                    }
+                });
+                }, 5L);
         }
     }
 

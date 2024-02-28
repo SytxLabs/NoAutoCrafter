@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Dispenser;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDispenseEvent;
@@ -37,6 +38,13 @@ public class PlacerListener implements Listener {
                 Bukkit.getScheduler().runTaskLater(AutoMain.instance, () -> {
                     Utils.removeItem((Dispenser) e.getBlock().getState(), item.getType(), 1);
                     e.getBlock().getState().update();
+                    ((Dispenser) e.getBlock().getState()).getSnapshotInventory().getViewers().forEach(player -> {
+                        try {
+                            //noinspection UnstableApiUsage
+                            ((Player) player).updateInventory();
+                        } catch (Exception ignored) {
+                        }
+                    });
                 }, 2L);
             }
         }
