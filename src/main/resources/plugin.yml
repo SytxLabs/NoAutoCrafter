@@ -1,5 +1,5 @@
 name: AutoCrafter
-version: '${project.version}'
+version: '1.2.4'
 main: de.chaosschwein.autocrafter.main.AutoMain
 api-version: '1.20'
 authors: [ ChaosSchwein, Erik05Master ]

@@ -96,27 +96,7 @@ public class Utils {
         if (dispenser == null) {
             return;
         }
-        for (int i = 0; i < dispenser.getSnapshotInventory().getSize(); i++) {
-            ItemStack itemStack = dispenser.getSnapshotInventory().getItem(i);
-            if (itemStack == null || itemStack.getType() != material) {
-                continue;
-            }
-            int newAmount = itemStack.getAmount() - amount;
-            amount -= itemStack.getAmount();
-            itemStack.setAmount(newAmount);
-            dispenser.getSnapshotInventory().setItem(i, itemStack.getAmount() <= 0 ? null : itemStack);
-            dispenser.update();
-            if (amount <= 0) {
-                break;
-            }
-        }
-        dispenser.getInventory().getViewers().forEach(player -> {
-            try {
-                //noinspection UnstableApiUsage
-                ((Player) player).updateInventory();
-            } catch (Exception ignored) {
-            }
-        });
+        removeItem(dispenser.getSnapshotInventory(), material, amount);
     }
 
     public static void addItem(Inventory inventory, Material material, int amount) {

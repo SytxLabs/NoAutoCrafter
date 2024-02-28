@@ -9,6 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Dispenser;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDispenseEvent;
@@ -89,6 +90,13 @@ public class FarmingStationListener implements Listener {
                                     f.getDispenser().getWorld().playSound(f.getDispenser().getLocation(), Sound.BLOCK_PISTON_EXTEND, 1, 1);
                                     Utils.removeItem(dispenser, finalItem.getType(), 1);
                                     dispenser.update();
+                                    dispenser.getSnapshotInventory().getViewers().forEach(player -> {
+                                        try {
+                                            //noinspection UnstableApiUsage
+                                            ((Player) player).updateInventory();
+                                        } catch (Exception ignored) {
+                                        }
+                                    });
                                 }
                             } else {
                                 switch (finalType.material) {
@@ -115,6 +123,13 @@ public class FarmingStationListener implements Listener {
                                 dispenser.update();
                                 Utils.removeItem(dispenser, finalItem.getType(), 1);
                                 dispenser.update();
+                                dispenser.getSnapshotInventory().getViewers().forEach(player -> {
+                                    try {
+                                        //noinspection UnstableApiUsage
+                                        ((Player) player).updateInventory();
+                                    } catch (Exception ignored) {
+                                    }
+                                });
                             }
                             f.blinkLamp();
                         }, 5);

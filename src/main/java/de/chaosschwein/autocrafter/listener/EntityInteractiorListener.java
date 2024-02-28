@@ -11,6 +11,7 @@ import org.bukkit.block.Dispenser;
 import org.bukkit.block.Hopper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDispenseEvent;
@@ -38,7 +39,16 @@ public class EntityInteractiorListener implements Listener {
             List<Entity> entities = block.getWorld().getNearbyEntities(boundingBox, entity -> entityType.containsKey(entity.getType())).stream().limit(1).toList();
             if (entities.isEmpty()) return;
             Entity entity = entities.get(0);
-            Bukkit.getScheduler().runTaskLater(AutoMain.instance, () -> Utils.removeItem(((Dispenser) ei.dispenser.getBlock().getState()).getInventory(), item.getType(), 1), 5L);
+            Bukkit.getScheduler().runTaskLater(AutoMain.instance, () -> {
+                Utils.removeItem(((Dispenser) ei.dispenser.getBlock().getState()).getInventory(), item.getType(), 1);
+                ei.dispenser.getSnapshotInventory().getViewers().forEach(player -> {
+                    try {
+                        //noinspection UnstableApiUsage
+                        ((Player) player).updateInventory();
+                    } catch (Exception ignored) {
+                    }
+                });
+            }, 5L);
             Utils.addItem(((Hopper)ei.hopper.getBlock().getState()).getInventory(), entityType.get(entity.getType()), 1);
         }
     }
