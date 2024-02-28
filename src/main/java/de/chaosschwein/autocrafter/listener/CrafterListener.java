@@ -95,19 +95,6 @@ public class CrafterListener implements Listener {
     }
 
     @EventHandler
-    public void onBlockDropItem(BlockDropItemEvent e) {
-        if (e.getBlock().getType() == Material.DISPENSER) {
-            if (new CheckBlocks(e.getBlock()).isPlacer()) {
-                Placer p = new Placer(e.getBlock().getLocation()).getPlacer();
-                if (p.piston == null || !AutoMain.placer) {
-                    return;
-                }
-                e.getItems().clear();
-            }
-        }
-    }
-
-    @EventHandler
     public void onBlockBreak(BlockBreakEvent e) {
         Message msg = new Message(e.getPlayer());
         if (e.getBlock().getType() == Material.DISPENSER) {
