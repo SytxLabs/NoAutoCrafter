@@ -25,7 +25,7 @@ public class EntityInteractiorListener implements Listener {
     @EventHandler
     public void onEntityInteractor(BlockDispenseEvent e) {
         if (e.getBlock().getType() != Material.DISPENSER) return;
-        if (!AutoMain.entityInteractor) return;
+        if (!AutoMain.config.entityInteractor) return;
         if (!new CheckBlocks(e.getBlock()).isEntityInteractor()) return;
         EntityInteractor ei = new EntityInteractor(e.getBlock().getLocation());
         if (!ei.isEntityInteractor) return;

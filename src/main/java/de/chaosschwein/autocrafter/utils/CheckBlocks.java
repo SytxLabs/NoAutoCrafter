@@ -232,4 +232,13 @@ public class CheckBlocks {
         }
         return false;
     }
+
+    public boolean isChunkLoader() {
+        Location loc = this.block.getLocation();
+        if (this.block.getType() != Material.BEACON) {
+            return false;
+        }
+        return this.block.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() - 1, loc.getBlockZ()).getType() == Material.HOPPER &&
+                this.block.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() - 2, loc.getBlockZ()).getType() == Material.FURNACE;
+    }
 }

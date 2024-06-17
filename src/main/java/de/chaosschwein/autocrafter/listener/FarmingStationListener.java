@@ -26,7 +26,7 @@ public class FarmingStationListener implements Listener {
         if (e.getBlock().getType() == Material.DISPENSER) {
             Dispenser dispenser = (Dispenser) e.getBlock().getState();
             if (new CheckBlocks(dispenser.getBlock()).isFarmingStation()) {
-                if (!AutoMain.farming_station) {
+                if (!AutoMain.config.farming_station) {
                     return;
                 }
                 FarmingStation f = new FarmingStation(dispenser.getLocation());

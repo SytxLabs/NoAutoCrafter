@@ -31,7 +31,7 @@ public class CrafterListener implements Listener {
     @EventHandler
     public void onDis(BlockDispenseEvent e) {
         if (e.getBlock().getType() != Material.DISPENSER) return;
-        if (!AutoMain.crafter) return;
+        if (!AutoMain.config.crafter) return;
 
         Dispenser dispenser = (Dispenser) e.getBlock().getState();
         if (!new CheckBlocks(dispenser.getBlock()).isCrafter()) return;
@@ -41,7 +41,9 @@ public class CrafterListener implements Listener {
         if (waitingForFinish.contains(e.getBlock())) return;
         CraftingRezept craftingRezept = c.getRezept();
         if (craftingRezept == null) return;
-        ItemStack[] di = Utils.getBlockInventory(dispenser.getBlock()).getContents();
+        Inventory dInv = Utils.getBlockInventory(dispenser.getBlock());
+        if (dInv == null) return;
+        ItemStack[] di = dInv.getContents();
         HashMap<Material, Integer> ingredients = new HashMap<>();
         for (ItemStack i : craftingRezept.getIngredients()) {
             if (i == null || i.getType() == Material.AIR) continue;
@@ -432,7 +434,7 @@ public class CrafterListener implements Listener {
             Block piston = e.getBlock();
             if (new CheckBlocks(piston).isBreaker()) {
                 Breaker b = new Breaker(piston.getLocation()).getBreaker();
-                if (b.endRod == null || b.endRod.getType() != Material.END_ROD || !AutoMain.breaker) {
+                if (b.endRod == null || b.endRod.getType() != Material.END_ROD || !AutoMain.config.breaker) {
                     return;
                 }
                 Block breakBlock = b.breakLoc.getBlock();

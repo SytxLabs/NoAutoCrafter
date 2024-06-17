@@ -25,7 +25,7 @@ public class ReceiverCommand implements CommandExecutor {
             if (AutoCommand.reload(sender, args)) {
                 return true;
             }
-            if (!AutoMain.transport) {
+            if (!AutoMain.config.transport) {
                 return true;
             }
             if (!Utils.hasPermission((Player) sender, AutoMain.permission.ReceiverCreate)) {

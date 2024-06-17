@@ -117,7 +117,7 @@ public class TransporterListener implements Listener {
         if (loc.getBlock().getType() == Material.TRAPPED_CHEST) {
             Transporter transporter = AutoMain.transporter;
             Block chest = loc.getBlock();
-            if (chest.getType() != Material.TRAPPED_CHEST || !AutoMain.transport || !new CheckBlocks(chest).isSender() || !transporter.isSender(loc)) {
+            if (chest.getType() != Material.TRAPPED_CHEST || !AutoMain.config.transport || !new CheckBlocks(chest).isSender() || !transporter.isSender(loc)) {
                 return;
             }
             ItemStack item = e.getItem();
@@ -158,7 +158,7 @@ public class TransporterListener implements Listener {
         if (loc.getBlock().getType() == Material.TRAPPED_CHEST) {
             Transporter transporter = AutoMain.transporter;
             Block chest = loc.getBlock();
-            if (chest.getType() != Material.TRAPPED_CHEST || !AutoMain.transport || !new CheckBlocks(chest).isSender() || !transporter.isSender(loc)) {
+            if (chest.getType() != Material.TRAPPED_CHEST || !AutoMain.config.transport || !new CheckBlocks(chest).isSender() || !transporter.isSender(loc)) {
                 return;
             }
             ItemStack item = event.getCurrentItem();
@@ -174,9 +174,7 @@ public class TransporterListener implements Listener {
                 return;
             }
             event.setCancelled(true);
-            Bukkit.getScheduler().runTaskLater(AutoMain.instance, () -> {
-                Utils.removeItem(event.getClickedInventory(), item.getType(), item.getAmount());
-            }, 2L);
+            Bukkit.getScheduler().runTaskLater(AutoMain.instance, () -> Utils.removeItem(event.getClickedInventory(), item.getType(), item.getAmount()), 2L);
         }
     }
 

@@ -10,6 +10,7 @@ public class Permission {
     public final String CrafterCreate;
     public final String ReceiverCreate;
     public final String SenderCreate;
+    public final String ChunkLoaderCreate;
     private final FileManager fileManager;
 
     public Permission() {
@@ -21,6 +22,7 @@ public class Permission {
         CrafterCreate = fileManager.read("autocrafter.create");
 
         ReceiverCreate = fileManager.read("receiver.create");
+        ChunkLoaderCreate = fileManager.read("chunkloader.create");
 
         SenderCreate = fileManager.read("sender.create");
     }
@@ -31,6 +33,7 @@ public class Permission {
             put("autocrafter.create", "");
 
             put("receiver.create", "");
+            put("chunkloader.create", "");
 
             put("sender.create", "");
         }});

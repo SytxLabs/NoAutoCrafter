@@ -44,7 +44,7 @@ public class Breeder {
     private void registerBlocksInRange() {
         if (dispenser.getBlockData() instanceof Directional) {
             BlockFace face = ((Directional) dispenser.getBlockData()).getFacing();
-            int range = AutoMain.breederRange;
+            int range = AutoMain.config.breederRange;
             int rangeHalf = range / 2;
             switch (face) {
                 case NORTH -> boundingBox = new BoundingBox(dispenser.getX() - rangeHalf, dispenser.getY() - 1, (dispenser.getZ() - range) - 1, dispenser.getX() + rangeHalf, dispenser.getY() + 3, dispenser.getZ());

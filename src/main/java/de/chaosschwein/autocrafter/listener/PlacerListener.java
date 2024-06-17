@@ -22,7 +22,7 @@ public class PlacerListener implements Listener {
             Dispenser dispenser = (Dispenser) e.getBlock().getState();
             if (new CheckBlocks(dispenser.getBlock()).isPlacer()) {
                 Placer p = new Placer(dispenser.getLocation()).getPlacer();
-                if (p.piston == null || !AutoMain.placer) {
+                if (p.piston == null || !AutoMain.config.placer) {
                     return;
                 }
                 e.setCancelled(true);

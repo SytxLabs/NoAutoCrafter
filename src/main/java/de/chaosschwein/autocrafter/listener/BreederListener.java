@@ -23,7 +23,7 @@ public class BreederListener implements Listener {
     @EventHandler
     public void onBreeder(BlockDispenseEvent e) {
         if (e.getBlock().getType() != Material.DISPENSER) return;
-        if (!AutoMain.breeder) return;
+        if (!AutoMain.config.breeder) return;
         if (!new CheckBlocks(e.getBlock()).isBreeder()) return;
         Breeder b = new Breeder(e.getBlock().getLocation());
         if (!b.isBreeder) return;

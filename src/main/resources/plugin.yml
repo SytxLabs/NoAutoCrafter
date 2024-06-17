@@ -1,5 +1,5 @@
-name: AutoCrafter
-version: '1.2.4'
+name: NoAutoCrafter
+version: '1.3.0'
 main: de.chaosschwein.autocrafter.main.AutoMain
 api-version: '1.20'
 authors: [ ChaosSchwein, Erik05Master ]
@@ -19,3 +19,7 @@ commands:
     usage: /sender
     description: Sender Command
     aliases: [ sc ]
+  chunkloader:
+    usage: /chunkloader
+    description: ChunkLoader Command
+    aliases: [ cl ]

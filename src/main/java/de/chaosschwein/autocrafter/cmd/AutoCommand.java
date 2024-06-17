@@ -26,7 +26,7 @@ public class AutoCommand implements CommandExecutor {
             if (AutoCommand.reload(sender, args)) {
                 return true;
             }
-            if (!AutoMain.crafter) {
+            if (!AutoMain.config.crafter) {
                 return true;
             }
             if (!Utils.hasPermission((Player) sender, AutoMain.permission.CrafterCreate)) {

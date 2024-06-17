@@ -5,7 +5,6 @@ import de.chaosschwein.autocrafter.manager.FileManager;
 
 import java.util.HashMap;
 
-@SuppressWarnings("SpellCheckingInspection")
 public class Language {
 
     public final String noPermission;
@@ -51,6 +50,12 @@ public class Language {
     public final String SenderTypeOverflow;
 
     public final String WrongPassword;
+
+    public final String NewVersionFound;
+
+    public final String ChunkLoaderAlreadyExists;
+    public final String ChunkLoaderCreated;
+    public final String ChunkLoaderIsFalse;
 
     public final FileManager fileManager;
 
@@ -105,6 +110,12 @@ public class Language {
         SenderTypeOverflow = fileManager.read("sender_type.overflow");
 
         WrongPassword = fileManager.read("wrongPassword");
+
+        NewVersionFound = fileManager.read("newVersionFound");
+
+        ChunkLoaderAlreadyExists = fileManager.read("chunkloader.alreadyExists");
+        ChunkLoaderCreated = fileManager.read("chunkloader.created");
+        ChunkLoaderIsFalse = fileManager.read("chunkloader.isFalse");
     }
 
     public void setDefault() {
@@ -158,6 +169,12 @@ public class Language {
             put("channel_type.public", "&7Public");
 
             put("wrongPassword", "&cDas Passwort ist falsch!");
+
+            put("newVersionFound", "&7Es wurde eine neue Version gefunden!");
+
+            put("chunkloader.alreadyExists", "&7Dieser ChunkLoader existiert bereits!");
+            put("chunkloader.created", "&7Der ChunkLoader wurde erstellt!");
+            put("chunkloader.isFalse", "&7Dieser Block ist kein ChunkLoader!");
         }});
     }
 }

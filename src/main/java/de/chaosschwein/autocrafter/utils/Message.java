@@ -24,15 +24,15 @@ public class Message {
     }
 
     public static void send(CommandSender player, String message) {
-        Objects.requireNonNullElseGet(player, Bukkit::getConsoleSender).sendMessage(ChatColor.translateAlternateColorCodes('&', AutoMain.prefix + message));
+        Objects.requireNonNullElseGet(player, Bukkit::getConsoleSender).sendMessage(ChatColor.translateAlternateColorCodes('&', AutoMain.config.prefix + message));
     }
 
     public static void info(String message) {
-        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', AutoMain.prefix + message));
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', AutoMain.config.prefix + message));
     }
 
     public void send(String message) {
-        Objects.requireNonNullElseGet(player, Bukkit::getConsoleSender).sendMessage(ChatColor.translateAlternateColorCodes('&', AutoMain.prefix + message));
+        Objects.requireNonNullElseGet(player, Bukkit::getConsoleSender).sendMessage(ChatColor.translateAlternateColorCodes('&', AutoMain.config.prefix + message));
     }
 
     public void noPermission() {
