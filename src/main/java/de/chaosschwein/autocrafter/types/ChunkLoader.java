@@ -96,6 +96,10 @@ public class ChunkLoader {
         return Beacon.getWorld().getName() + ";" + Beacon.getX() + ";" + Beacon.getY() + ";" + Beacon.getZ();
     }
 
+    public boolean equals(ChunkLoader obj) {
+        return this.toString().equals(obj.toString());
+    }
+
     public static ChunkLoader fromString(String s) {
         String[] split = s.split(";");
         if (split.length != 4) {

@@ -6,6 +6,7 @@ import de.chaosschwein.autocrafter.types.CraftingRezept;
 import de.chaosschwein.autocrafter.utils.DataCache;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
@@ -31,7 +32,11 @@ public class CrafterFile {
     }
 
     public CraftingRezept getRezept(Crafter crafter) {
-        Location loc = crafter.dispenser.getLocation();
+        Block dis = crafter.dispenser;
+        if (dis == null) {
+            return null;
+        }
+        Location loc = dis.getLocation();
         if (loc.getWorld() == null) {
             return null;
         }

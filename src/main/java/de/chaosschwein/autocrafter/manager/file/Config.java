@@ -39,7 +39,7 @@ public class Config {
 
     public void setDefaults() {
         config.writeDefault(new HashMap<>() {{
-            put("prefix", "&8[&aAutoCrafter§8] &7");
+            put("prefix", "&8[&aNoAutoCrafter§8] &7");
             put("crafter", true);
             put("breaker", true);
             put("placer", true);

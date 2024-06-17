@@ -46,26 +46,25 @@ public class ChunkLoaderFile {
     }
 
     public void removeChunk(ChunkLoader chunk) {
-        chunks.remove(chunk);
+        for (ChunkLoader c : chunks) {
+            if (c.equals(chunk)) {
+                chunks.remove(c);
+                break;
+            }
+        }
         save();
     }
 
     public boolean containsChunk(ChunkLoader chunk) {
-        return chunks.contains(chunk);
-    }
-
-    public void clearChunks() {
-        chunks.clear();
-        save();
+        for (ChunkLoader c : chunks) {
+            if (c.equals(chunk)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public List<ChunkLoader> getChunks() {
         return chunks;
-    }
-
-    public void loadChunks(List<ChunkLoader> chunks) {
-        this.chunks.clear();
-        this.chunks.addAll(chunks);
-        save();
     }
 }

@@ -7,6 +7,7 @@ import de.chaosschwein.autocrafter.cmd.SenderCommand;
 import de.chaosschwein.autocrafter.listener.*;
 import de.chaosschwein.autocrafter.manager.ChunkManager;
 import de.chaosschwein.autocrafter.manager.file.*;
+import de.chaosschwein.autocrafter.types.ChunkLoader;
 import de.chaosschwein.autocrafter.utils.Message;
 import de.chaosschwein.autocrafter.utils.Metrics;
 import org.bukkit.Bukkit;
@@ -81,13 +82,13 @@ public final class AutoMain extends JavaPlugin {
         if (Bukkit.getPluginManager().isPluginEnabled(instance)) {
             Bukkit.getConsoleSender().sendMessage(config.prefix + "§a--------------------------");
             Bukkit.getConsoleSender().sendMessage(config.prefix + "§a");
-            Bukkit.getConsoleSender().sendMessage(config.prefix + "§aAutoCraft enabled!");
+            Bukkit.getConsoleSender().sendMessage(config.prefix + "§aNoAutoCraft enabled!");
             Bukkit.getConsoleSender().sendMessage(config.prefix + "§a");
             Bukkit.getConsoleSender().sendMessage(config.prefix + "§a--------------------------");
         } else {
             Bukkit.getConsoleSender().sendMessage(config.prefix + "§c--------------------------");
             Bukkit.getConsoleSender().sendMessage(config.prefix + "§c");
-            Bukkit.getConsoleSender().sendMessage(config.prefix + "§cAutoCraft failed to enable!");
+            Bukkit.getConsoleSender().sendMessage(config.prefix + "§cNoAutoCraft failed to enable!");
             Bukkit.getConsoleSender().sendMessage(config.prefix + "§c");
             Bukkit.getConsoleSender().sendMessage(config.prefix + "§c--------------------------");
         }
@@ -101,6 +102,10 @@ public final class AutoMain extends JavaPlugin {
         });
         new Metrics(this, 22302);
         transporter = new Transporter();
+
+        for (ChunkLoader chunk : chunkLoaderFile.getChunks()) {
+            chunk.enableChunkLoader();
+        }
     }
 
     @Override
@@ -108,7 +113,7 @@ public final class AutoMain extends JavaPlugin {
         if (Bukkit.getPluginManager().isPluginEnabled(instance)) {
             Bukkit.getConsoleSender().sendMessage(config.prefix + "§c--------------------------");
             Bukkit.getConsoleSender().sendMessage(config.prefix + "§c");
-            Bukkit.getConsoleSender().sendMessage(config.prefix + "§cAutoCraft disabled!");
+            Bukkit.getConsoleSender().sendMessage(config.prefix + "§cNoAutoCraft disabled!");
             Bukkit.getConsoleSender().sendMessage(config.prefix + "§c");
             Bukkit.getConsoleSender().sendMessage(config.prefix + "§c--------------------------");
             chunkManager.disableChunkLoad();
