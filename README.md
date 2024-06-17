@@ -98,3 +98,4 @@ You need for a Animal Interactor
 
 To use the Animal Interactor give a bucket or bowl in the Dispenser and activate it
 
+![stats](https://bstats.org/signatures/bukkit/NoAutoCrafter.svg)

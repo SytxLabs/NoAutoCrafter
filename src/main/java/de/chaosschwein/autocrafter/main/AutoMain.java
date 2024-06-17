@@ -8,6 +8,7 @@ import de.chaosschwein.autocrafter.listener.*;
 import de.chaosschwein.autocrafter.manager.ChunkManager;
 import de.chaosschwein.autocrafter.manager.file.*;
 import de.chaosschwein.autocrafter.utils.Message;
+import de.chaosschwein.autocrafter.utils.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -41,6 +42,7 @@ public final class AutoMain extends JavaPlugin {
         AutoMain.transporter = new Transporter();
         AutoMain.chunkManager = new ChunkManager();
         AutoMain.chunkLoaderFile = new ChunkLoaderFile();
+        new Metrics(instance, 22302);
     }
 
     @Override
@@ -97,6 +99,7 @@ public final class AutoMain extends JavaPlugin {
                 Bukkit.getConsoleSender().sendMessage(config.prefix + "Up to date!");
             }
         });
+        new Metrics(this, 22302);
         transporter = new Transporter();
     }
 
